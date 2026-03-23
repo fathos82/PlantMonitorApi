@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import io.athos.agrocore.plantmonitor.NormalizedEnum;
 
 public enum SensorModel {
+    MOCK,
     HC_SR04;
 
     @JsonCreator
