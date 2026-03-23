@@ -10,6 +10,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,41 +30,20 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-//    @Autowired
-//    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
     private SecurityUserDetailsService securityUserDetailsService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(
-                                        "/api/auth/login/**",
-                                        "/api/auth/register/**",
-                                        "/api/auth/refresh/**",
-                                        "/api/auth/confirm-email/**",
-                                        "/api/auth/resend-email/**",
-                                        "/api/auth/forgot-password/**",
-                                        "/api/auth/reset-password/**",
-                                        "/api/auth/confirm-delete-account/**"
-                                ).permitAll()
-                                .anyRequest().permitAll()
-                )
-
-                // Define a política de sessão como stateless
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // Adiciona seu filtro JWT antes do filtro de autenticação padrão
-//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .build();
-
     }
 
     @Bean
@@ -71,19 +52,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
+    public AuthenticationManager authenticationManager() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(securityUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(provider);
     }
-
-
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return securityUserDetailsService;
-    }
-
-//    @Bean
-//    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-//        return new JwtAuthenticationFilter();
-//    }
 }
