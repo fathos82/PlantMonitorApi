@@ -23,18 +23,14 @@ public class MqttSubscriber {
     @Value("${mqtt.server.url:tcp://147.93.176.117:1883}")
     private String serverURL;
 
-
-
-
     @PostConstruct
     public void subscribe() throws MqttException {
 
         MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(true);
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
 
-        MqttClient client = new MqttClient(serverURL, "plant_monitor-client");
+        MqttClient client = new MqttClient(serverURL, MqttClient.generateClientId());
         client.connect(options);
 
         client.subscribe("plant/data", (topic, msg) -> {
