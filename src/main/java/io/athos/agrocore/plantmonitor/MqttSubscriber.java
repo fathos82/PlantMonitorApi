@@ -27,7 +27,7 @@ public class MqttSubscriber {
     public void subscribe() throws MqttException, MqttException {
 
         MqttClient client =
-                new MqttClient(serverURL, "plant_monitor-client");
+                new MqttClient(serverURL, "plant_monitor_api-client");
 
         client.connect();
         client.subscribe("plant/data", (topic, msg) -> {
