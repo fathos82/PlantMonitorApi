@@ -49,7 +49,7 @@ public class SecurityConfig {
                                         "/api/auth/reset-password/**",
                                         "/api/auth/confirm-delete-account/**"
                                 ).permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
 
                 // Define a política de sessão como stateless
