@@ -52,7 +52,7 @@ public class SecurityConfig {
                 )
 
                 // Define a política de sessão como stateless
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // Adiciona seu filtro JWT antes do filtro de autenticação padrão
 //                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
