@@ -1,0 +1,84 @@
+# ========================
+# Build / Target
+# ========================
+target/
+build/
+out/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Evitar ignorar targets dentro de src (casos específicos)
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
+
+# ========================
+# OS Files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# IntelliJ IDEA (JetBrains)
+# ========================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ========================
+# Eclipse / STS
+# ========================
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# ========================
+# NetBeans
+# ========================
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ========================
+# VS Code
+# ========================
+.vscode/
+
+# ========================
+# Environment / Secrets
+# ========================
+.env
+.env.*
+*.key
+*.pem
+
+# ========================
+# Java
+# ========================
+*.class
+
+# ========================
+# Spring Boot
+# ========================
+application-*.yml
+application-*.properties
+
+# (opcional) manter exemplo versionado
+!application-dev.yml
+!application-dev.properties
