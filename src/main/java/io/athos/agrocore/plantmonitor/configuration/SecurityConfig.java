@@ -1,7 +1,7 @@
 package io.athos.agrocore.plantmonitor.configuration;
 
 
-import io.athos.agrocore.plantmonitor.security.JwtAuthenticationFilter;
+//import io.athos.agrocore.plantmonitor.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +26,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+//    @Autowired
+//    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 
     @Bean
