@@ -7,10 +7,11 @@ import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoCon
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
-@SpringBootApplication(exclude = {
-        SecurityAutoConfiguration.class,
-        UserDetailsServiceAutoConfiguration.class
-})
+@SpringBootApplication(
+//        exclude = {
+//        SecurityAutoConfiguration.class,
+//        UserDetailsServiceAutoConfiguration.class}
+)
 
 public class PlantMonitorApplication {
 
