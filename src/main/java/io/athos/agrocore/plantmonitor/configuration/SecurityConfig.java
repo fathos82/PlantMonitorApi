@@ -2,6 +2,7 @@ package io.athos.agrocore.plantmonitor.configuration;
 
 
 //import io.athos.agrocore.plantmonitor.security.JwtAuthenticationFilter;
+import io.athos.agrocore.plantmonitor.security.SecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,8 @@ public class SecurityConfig {
 //    @Autowired
 //    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Autowired
+    private SecurityUserDetailsService securityUserDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -74,10 +77,10 @@ public class SecurityConfig {
 
 
 
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        return userDetailsService;
-//    }
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return securityUserDetailsService;
+    }
 
 //    @Bean
 //    public JwtAuthenticationFilter jwtAuthenticationFilter() {
