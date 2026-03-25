@@ -20,6 +20,8 @@ public class SensorController {
 
     @PostMapping
     public ResponseEntity<SensorResponse> registerSensor(@Valid @RequestBody RegisterSensorRequest request){
+        System.out.println("REGISTERING SENSOR");
+
         return ResponseEntity.ok(new SensorResponse(sensorService.createSensor(request)));
     }
 

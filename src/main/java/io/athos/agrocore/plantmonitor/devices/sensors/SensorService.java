@@ -30,12 +30,16 @@ public class SensorService {
 
 
     public VirtualSensor createSensor(RegisterSensorRequest request) {
+        System.out.println("REGISTERING SENSOR");
+
         VirtualSensor virtualSensor = new VirtualSensor();
         virtualSensor.setName(request.sensorName());
         virtualSensor.setDevice(deviceService.getDeviceByUUID(request.deviceUid()));
         virtualSensor.setParameters(request.parameters());
         virtualSensor.setModel(request.model());
-        virtualSensor.setCapabilities(new HashSet<>(request.capabilities()));
+//        virtualSensor.setCapabilities(new HashSet<>(request.capabilities()));
+        System.out.println("REGISTERING SENSOR ");
+
         return virtualSensorRepository.save(virtualSensor);
     }
 

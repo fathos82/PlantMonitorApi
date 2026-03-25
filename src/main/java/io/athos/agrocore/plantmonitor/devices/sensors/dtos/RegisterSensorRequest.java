@@ -9,7 +9,7 @@ import java.util.Map;
 public record RegisterSensorRequest(
         String deviceUid, // todo: change to the normal ID
         String sensorName, // todo: apelido ou modelo?
-        List<MeasurementType> capabilities,
+//        List<MeasurementType> capabilities,
         Map<String, String>parameters,
         SensorModel model
 ) {
