@@ -1,5 +1,4 @@
 package io.athos.agrocore.plantmonitor.devices.sensors;
-
 import io.athos.agrocore.plantmonitor.devices.dtos.DeviceResponse;
 import io.athos.agrocore.plantmonitor.devices.sensors.dtos.*;
 import jakarta.validation.Valid;

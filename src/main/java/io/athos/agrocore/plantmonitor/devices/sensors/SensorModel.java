@@ -5,6 +5,8 @@ import io.athos.agrocore.plantmonitor.NormalizedEnum;
 
 public enum SensorModel {
     MOCK,
+    LM35DZ,
+
     HC_SR04;
 
     @JsonCreator
