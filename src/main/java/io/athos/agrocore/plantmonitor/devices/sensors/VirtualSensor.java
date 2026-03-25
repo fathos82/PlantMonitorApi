@@ -26,8 +26,8 @@ public class  VirtualSensor {
     @ManyToOne
     private Device device;
     private String name; // todo: ver como esse dado sera preenchido.
-    private SensorModel model;
-    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private SensorModel model;    @ElementCollection
     @Enumerated(EnumType.STRING)
     private Set<MeasurementType> capabilities;
     @ElementCollection
