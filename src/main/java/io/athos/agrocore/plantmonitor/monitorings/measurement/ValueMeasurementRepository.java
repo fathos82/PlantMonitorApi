@@ -36,29 +36,36 @@ public interface ValueMeasurementRepository extends JpaRepository<MeasurementVal
 
 
     @Query(value = """
-    SELECT (extract(epoch FROM timestamp) * 1000) AS time,
-           value AS value
-    FROM measurement_value
-    WHERE measurement_parent_id = :id
-      AND timestamp < :lastTimestamp
-    ORDER BY timestamp DESC
+    SELECT mv.timestamp AS time,
+           mv.value AS value
+    FROM measurement_value mv
+    WHERE mv.measurement_parent_id = :id
+      AND mv.timestamp < :lastTimestamp
+    ORDER BY mv.timestamp DESC, mv.id DESC
     LIMIT :limit
 """, nativeQuery = true)
-    List<MeasurementValueView> findMeasurementValue(
-            Long id,
-            Instant lastTimestamp,
-            int limit
+    List<MeasurementValueView> findMeasurementValuesWithView(
+            @Param("id") Long id,
+            @Param("lastTimestamp") Instant lastTimestamp,
+            @Param("limit") int limit
     );
 
-    @Query(value = """
-    SELECT extract(epoch FROM timestamp) * 1000 AS time,
-           value
-    FROM measurement_value
-    WHERE measurement_parent_id = :id
-    ORDER BY timestamp DESC
-""", nativeQuery = true)
-    List<Object[]> findRaw(Long id);
 
+    @Query(value = """
+    SELECT mv.timestamp AS time,
+           mv.value AS value
+    FROM measurement_value mv
+    WHERE mv.measurement_parent_id = :id
+    AND mv.timestamp < :lastTimestamp
+    ORDER BY mv.timestamp DESC, mv.id DESC
+    LIMIT :limit
+""", nativeQuery = true)
+    List<Object[]> findRaw(
+            @Param("id") Long id,
+            @Param("lastTimestamp") Instant lastTimestamp,
+
+            @Param("limit") int limit
+    );
 // TODO:
 //@GetMapping
 //public void stream(HttpServletResponse response) throws IOException {

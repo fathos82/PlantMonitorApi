@@ -28,17 +28,17 @@ public class MeasurementService {
     @Autowired
     private SensorService sensorService;
     @Autowired
-    ValueMeasurementRepository valueMeasurementRepository;
+    ValueMeasurementRepository measurementValueRepository;
 
 
 // TODO:   server.compression.enabled=true
 
-    public void createMeasurement(Long measurementId, AddMeasurementRequest request){
+    public void createMeasurement(AddMeasurementRequest request){
         Measurement  measurement = new Measurement();
 
         /// todo: verificar se o sensor de capacidade de monitorar essa medida
         measurement.setMeasurementType(request.measurementType());
-        measurement.setPlantMonitoring(plantMonitoringService.findPlantMonitoringById(measurementId));
+        measurement.setPlantMonitoring(plantMonitoringService.findPlantMonitoringById(request.plantId()));
         measurement.setVirtualSensor(sensorService.getSensorById(request.sensorId()));
         measurementRepository.save(measurement);
 //        return measurement;
@@ -54,14 +54,14 @@ public class MeasurementService {
             MeasurementValue measurementValue = new MeasurementValue(measurement,Instant.ofEpochMilli(timestampRealMs), sensorReading.getValue());
             measurementValues.add(measurementValue);
         }
-        valueMeasurementRepository.saveAll(measurementValues);
+        measurementValueRepository.saveAll(measurementValues);
     }
 
     public  List<MeasurementValue> listMeasurementValue(Long plantId, MeasurementType measurementType, String ifModifiedSince) {
         if (ifModifiedSince != null) {
-            return valueMeasurementRepository.findAllByMeasurementParent_PlantMonitoring_IdAndTimestampAfter(plantId, parseIfModifiedSince(ifModifiedSince).toInstant());
+            return measurementValueRepository.findAllByMeasurementParent_PlantMonitoring_IdAndTimestampAfter(plantId, parseIfModifiedSince(ifModifiedSince).toInstant());
         }
-        return valueMeasurementRepository.findAllByMeasurementParent_PlantMonitoring_IdAndMeasurementParent_MeasurementType(plantId, measurementType);
+        return measurementValueRepository.findAllByMeasurementParent_PlantMonitoring_IdAndMeasurementParent_MeasurementType(plantId, measurementType);
     }
 
     public  List<Measurement> listMeasurementByParent(Long plantId,MeasurementType measurementType, String ifModifiedSince) {
@@ -88,7 +88,7 @@ public class MeasurementService {
 
 
     boolean hasMonitoringModifiedSince(String ifModifiedSince) {
-        return valueMeasurementRepository.existsByTimestampAfter(parseIfModifiedSince(ifModifiedSince).toInstant());
+        return measurementValueRepository.existsByTimestampAfter(parseIfModifiedSince(ifModifiedSince).toInstant());
     }
 
     ZonedDateTime parseIfModifiedSince(String ifModifiedSince) {
@@ -103,7 +103,7 @@ public class MeasurementService {
 
     public long getLastModified(Long plantId, MeasurementType measurementType) {
         Instant lastModified =
-                valueMeasurementRepository.findLastModified(plantId, measurementType);
+                measurementValueRepository.findLastModified(plantId, measurementType);
 
         if (lastModified == null) {
             return -1; // padrão do Spring quando não há modificação
@@ -124,5 +124,14 @@ public class MeasurementService {
 
     public void deleteMeasurement(Long measurementId) {
         measurementRepository.deleteById(measurementId);
+    }
+
+    public List<MeasurementValueView> listMeasurementByParentWithView(Long measurementId, Instant lastTimeStamp, int limit) {
+        return measurementValueRepository.findMeasurementValuesWithView(measurementId, lastTimeStamp, limit);
+
+    }
+
+    public List<Object[]> listMeasurementByParent(Long measurementId, Instant lastTimeStamp, int limit){
+        return measurementValueRepository.findRaw(measurementId, lastTimeStamp, limit);
     }
 }
