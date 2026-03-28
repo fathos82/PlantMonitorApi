@@ -1,6 +1,7 @@
 package io.athos.agrocore.plantmonitor;
 
 import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementService;
+import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementType;
 import jakarta.annotation.PostConstruct;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -8,15 +9,17 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
-import java.nio.charset.StandardCharsets;
+// IMPORTANTE: Importe a classe que o compilador do Protobuf gerou para você
+import io.athos.agrocore.plantmonitor.devices.sensors.Proto.SensorReading;
+import io.athos.agrocore.plantmonitor.devices.sensors.Proto.SensorReadingBatch;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 @Component
 public class MqttSubscriber {
-    @Autowired
-    private ObjectMapper objectMapper;
+
+    // Removemos o ObjectMapper, o Protobuf é autossuficiente!
+
     @Autowired
     MeasurementService measurementService;
 
@@ -29,14 +32,40 @@ public class MqttSubscriber {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
+        // Dica: Para resiliência em produção, ative a reconexão automática
+        options.setAutomaticReconnect(true);
 
         MqttClient client = new MqttClient(serverURL, MqttClient.generateClientId());
         client.connect(options);
 
-        client.subscribe("plant/data", (topic, msg) -> {
-            String payload = new String(msg.getPayload(), StandardCharsets.UTF_8);
-            JsonNode root = objectMapper.readTree(payload);
-            measurementService.addValueToMeasurement(root);
+
+        client.subscribe("plant_monitor/#", (topic, msg) -> {
+
+            try {
+
+                String[] parts = topic.split("/");
+                if (parts.length != 4) return;
+
+                String deviceUuid = parts[1];
+                Long sensorId = Long.parseLong(parts[2]);
+                String capability = parts[3];
+                MeasurementType measurementType = MeasurementType.fromString(capability);
+
+
+                // 2. PROTOBUF: Pegamos os bytes puros da rede (sem converter para String!)
+                byte[] payloadBinario = msg.getPayload();
+
+                // Desempacota os bytes diretamente para o Objeto Java gerado pelo .proto
+                SensorReadingBatch batch = SensorReadingBatch.parseFrom(payloadBinario);
+                measurementService.saveAll(measurementType,sensorId,batch);
+
+
+            } catch (InvalidProtocolBufferException e) {
+                // Cai aqui se algum sensor antigo mandar JSON ou lixo em vez de Protobuf
+                System.err.println("Ignorando payload inválido no tópico " + topic + ". Não é um Protobuf válido.");
+            } catch (Exception e) {
+                System.err.println("Erro ao processar leitura: " + e.getMessage());
+            }
         });
     }
 }

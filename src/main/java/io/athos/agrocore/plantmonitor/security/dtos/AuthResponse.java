@@ -6,8 +6,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
-public record AuthResponse(Long id, String username, String email,   String phone,LocalDateTime createdAt, LocalDateTime updatedAt) {
+public record AuthResponse(Long id, String email,   String phone,LocalDateTime createdAt, LocalDateTime updatedAt) {
     public AuthResponse(User persistentUser) {
-        this(persistentUser.getId(), persistentUser.getUsername(), persistentUser.getEmail(), persistentUser.getPhone(), persistentUser.getCreatedAt(), persistentUser.getUpdatedAt());
+        this(persistentUser.getId(), persistentUser.getEmail(), persistentUser.getPhone(), persistentUser.getCreatedAt(), persistentUser.getUpdatedAt());
     }
 }

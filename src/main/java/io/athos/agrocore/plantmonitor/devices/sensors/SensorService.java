@@ -47,6 +47,7 @@ public class SensorService {
         VirtualSensor virtualSensor = getSensorById(sensorId);
         virtualSensor.setName(request.sensorName());
         virtualSensor.setParameters(request.parameters());
+//        virtualSensor.setModel(request.model());
         // todo: set Parameters and model
         return virtualSensorRepository.save(virtualSensor);
     }

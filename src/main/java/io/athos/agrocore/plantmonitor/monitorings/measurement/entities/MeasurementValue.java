@@ -11,7 +11,6 @@ import java.time.Instant;
 @Entity
 @Setter
 
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(
         indexes = {
                 @Index(
@@ -20,7 +19,7 @@ import java.time.Instant;
                 )
         }
 )
-public abstract class MeasurementValue {
+public  class MeasurementValue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,4 +32,7 @@ public abstract class MeasurementValue {
     @Getter
     @Column(nullable = false)
     private Instant timestamp;
+    @Getter
+    @Column(nullable = false)
+    private float value;
 }

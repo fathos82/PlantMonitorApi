@@ -1,25 +1,22 @@
 package io.athos.agrocore.plantmonitor.monitorings.measurement;
+import io.athos.agrocore.plantmonitor.devices.sensors.Proto;
 import io.athos.agrocore.plantmonitor.devices.sensors.SensorService;
 import io.athos.agrocore.plantmonitor.devices.sensors.VirtualSensor;
 import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoringService;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
-import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.MeasurementValueDTO;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.entities.MeasurementValue;
-import io.athos.agrocore.plantmonitor.monitorings.measurement.entities.MeasurementValueFactory;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.repositories.ValueMeasurementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
-
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MeasurementService {
@@ -36,8 +33,6 @@ public class MeasurementService {
     ValueMeasurementRepository valueMeasurementRepository;
 
 
-    @Autowired
-    private MeasurementValueFactory measurementValueFactory;
 
 
     public void createMeasurement(Long measurementId, AddMeasurementRequest request){
@@ -59,27 +54,19 @@ public class MeasurementService {
     }
     */
 
-    public void addValueToMeasurement (JsonNode root){
-    try {
-        MeasurementType measurementType = MeasurementType.fromString(root.get("type").asString());
-        MeasurementValueAndDtoPair measurementPair = measurementValueFactory.createMeasurement(measurementType, root, objectMapper);
-        MeasurementValueDTO measurementDTO = measurementPair.measurementDTO;
-        Long sensorId = measurementDTO.sensorId();
-        Optional<Measurement> measurementOptional = measurementRepository.findByVirtualSensorIdAndMeasurementType(sensorId, measurementType);
-        if (measurementOptional.isPresent()) {
-            Measurement measurement = measurementOptional.get();
-            MeasurementValue valueMeasurement = measurementPair.measurementValue;
-            valueMeasurement.setTimestamp(measurementDTO.measuredAt());
-            valueMeasurement = measurement.addMeasurementValue(valueMeasurement);
-            valueMeasurementRepository.save(valueMeasurement);
+    public void saveAll(MeasurementType capability,Long sensorId, Proto.SensorReadingBatch batch) {
+        List<MeasurementValue> measurementValues = new ArrayList<>();
+        Measurement measurement = measurementRepository.findByVirtualSensorIdAndMeasurementType(sensorId, capability).orElseThrow(() -> new NotFoundException("measurement", "capability", capability.toString()));
+        long baseTimestamp = batch.getBaseTimestamp();
+        for (Proto.SensorReading sensorReading : batch.getReadingsList()) {
+            long timestampRealMs = baseTimestamp + sensorReading.getDeltaMs();
+            MeasurementValue measurementValue = new MeasurementValue();
+            measurementValue.setValue(sensorReading.getValue());
+            measurementValue.setTimestamp(Instant.ofEpochMilli(timestampRealMs));
+            measurementValue.setMeasurementParent(measurement);
+            measurementValues.add(measurementValue);
         }
-        sensorService.activateSensor(sensorId);
-
-    }
-    catch (Exception e) {
-        System.out.println(e.getMessage());
-        e.printStackTrace();
-    }
+        valueMeasurementRepository.saveAll(measurementValues);
     }
 
     public  List<MeasurementValue> listMeasurementValue(Long plantId, MeasurementType measurementType, String ifModifiedSince) {

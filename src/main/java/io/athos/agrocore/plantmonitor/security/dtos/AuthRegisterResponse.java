@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 public record AuthRegisterResponse(
         Long userId,
-        String username,
         String name,
         String email,
         String phone,
@@ -14,6 +13,6 @@ public record AuthRegisterResponse(
         LocalDateTime updatedAt
 ) {
     public AuthRegisterResponse(User user) {
-        this(user.getId(),user.getUsername(), user.getName(), user.getEmail(), user.getPhone(), user.getCreatedAt(), user.getUpdatedAt());
+        this(user.getId(), user.getName(), user.getEmail(), user.getPhone(), user.getCreatedAt(), user.getUpdatedAt());
     }
 }

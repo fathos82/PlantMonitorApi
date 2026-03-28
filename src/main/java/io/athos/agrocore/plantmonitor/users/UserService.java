@@ -16,7 +16,6 @@ public class UserService {
 
     public User createUser(RegisterAuthRequest request) {
         User user = new User();
-        user.setUsername(request.username());
         user.setName(request.name());
         user.setEmail(request.email());
         user.setPhone(request.phone());
