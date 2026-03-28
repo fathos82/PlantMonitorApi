@@ -1,5 +1,6 @@
 package io.athos.agrocore.plantmonitor;
 
+import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementService;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementType;
 import jakarta.annotation.PostConstruct;
@@ -63,9 +64,13 @@ public class MqttSubscriber {
             } catch (InvalidProtocolBufferException e) {
                 // Cai aqui se algum sensor antigo mandar JSON ou lixo em vez de Protobuf
                 System.err.println("Ignorando payload inválido no tópico " + topic + ". Não é um Protobuf válido.");
-            } catch (Exception e) {
+            }
+            catch (NotFoundException ignore){
+            }
+            catch (Exception e) {
                 System.err.println("Erro ao processar leitura: " + e.getMessage());
             }
+
         });
     }
 }
