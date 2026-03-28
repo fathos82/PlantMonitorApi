@@ -1,7 +1,7 @@
 package io.athos.agrocore.plantmonitor.monitorings.measurement.dtos;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.Measurement;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementType;
-import io.athos.agrocore.plantmonitor.monitorings.measurement.entities.MeasurementValue;
+import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementValue;
 
 import java.time.LocalDateTime;
 import java.util.List;

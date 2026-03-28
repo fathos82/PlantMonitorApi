@@ -6,8 +6,6 @@ import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoringService;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
-import io.athos.agrocore.plantmonitor.monitorings.measurement.entities.MeasurementValue;
-import io.athos.agrocore.plantmonitor.monitorings.measurement.repositories.ValueMeasurementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -33,7 +31,7 @@ public class MeasurementService {
     ValueMeasurementRepository valueMeasurementRepository;
 
 
-
+// TODO:   server.compression.enabled=true
 
     public void createMeasurement(Long measurementId, AddMeasurementRequest request){
         Measurement  measurement = new Measurement();
@@ -53,10 +51,7 @@ public class MeasurementService {
         long baseTimestamp = batch.getBaseTimestamp();
         for (Proto.SensorReading sensorReading : batch.getReadingsList()) {
             long timestampRealMs = baseTimestamp + sensorReading.getDeltaMs();
-            MeasurementValue measurementValue = new MeasurementValue();
-            measurementValue.setValue(sensorReading.getValue());
-            measurementValue.setTimestamp(Instant.ofEpochMilli(timestampRealMs));
-            measurementValue.setMeasurementParent(measurement);
+            MeasurementValue measurementValue = new MeasurementValue(measurement,Instant.ofEpochMilli(timestampRealMs), sensorReading.getValue());
             measurementValues.add(measurementValue);
         }
         valueMeasurementRepository.saveAll(measurementValues);

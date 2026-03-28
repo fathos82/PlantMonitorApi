@@ -1,7 +1,5 @@
-package io.athos.agrocore.plantmonitor.monitorings.measurement.repositories;
+package io.athos.agrocore.plantmonitor.monitorings.measurement;
 
-import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementType;
-import io.athos.agrocore.plantmonitor.monitorings.measurement.entities.MeasurementValue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,5 +30,46 @@ public interface ValueMeasurementRepository extends JpaRepository<MeasurementVal
             @Param("type") MeasurementType type
     );
 
+
+
     List<MeasurementValue> findAllByMeasurementParent_PlantMonitoring_IdAndTimestampAfter(Long plantId, Instant instant);
+
+
+    @Query(value = """
+    SELECT (extract(epoch FROM timestamp) * 1000) AS time,
+           value AS value
+    FROM measurement_value
+    WHERE measurement_parent_id = :id
+      AND timestamp < :lastTimestamp
+    ORDER BY timestamp DESC
+    LIMIT :limit
+""", nativeQuery = true)
+    List<MeasurementValueView> findMeasurementValue(
+            Long id,
+            Instant lastTimestamp,
+            int limit
+    );
+
+    @Query(value = """
+    SELECT extract(epoch FROM timestamp) * 1000 AS time,
+           value
+    FROM measurement_value
+    WHERE measurement_parent_id = :id
+    ORDER BY timestamp DESC
+""", nativeQuery = true)
+    List<Object[]> findRaw(Long id);
+
+// TODO:
+//@GetMapping
+//public void stream(HttpServletResponse response) throws IOException {
+//    var writer = response.getWriter();
+//
+//    writer.write("[");
+//
+//    jdbcTemplate.query("SELECT ...", rs -> {
+//        writer.write("[" + rs.getLong(1) + "," + rs.getDouble(2) + "],");
+//    });
+//
+//    writer.write("]");
+//}
 }
