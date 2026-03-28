@@ -36,7 +36,7 @@ public interface ValueMeasurementRepository extends JpaRepository<MeasurementVal
 
 
     @Query(value = """
-    SELECT mv.timestamp AS time,
+    SELECT mv.timestamp AS timestamp,
            mv.value AS value
     FROM measurement_value mv
     WHERE mv.measurement_parent_id = :id
@@ -63,7 +63,6 @@ public interface ValueMeasurementRepository extends JpaRepository<MeasurementVal
     List<Object[]> findRaw(
             @Param("id") Long id,
             @Param("lastTimestamp") Instant lastTimestamp,
-
             @Param("limit") int limit
     );
 // TODO:
