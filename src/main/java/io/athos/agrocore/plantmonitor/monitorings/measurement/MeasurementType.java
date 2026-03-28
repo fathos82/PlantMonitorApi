@@ -11,6 +11,7 @@ public enum MeasurementType {
     SOIL_MOISTURE,
 
     IRRIGATION_STATUS,
+    MOCK,
 
     PLANT_HEALTH;
 
