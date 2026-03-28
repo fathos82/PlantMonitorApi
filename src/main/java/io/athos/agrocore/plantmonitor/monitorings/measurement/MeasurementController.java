@@ -72,7 +72,7 @@ public class MeasurementController {
     public ResponseEntity<List<MeasurementValueView>> listMeasurementByParentWithView(
             @PathVariable Long measurementId,
             @RequestParam("lastTimestamp") Instant lastTimestamp,
-            @RequestParam(value = "limit", defaultValue = "999999999999999999999999999") Integer limit
+            @RequestParam(value = "limit", defaultValue = "99999999") Integer limit
             ){
 
         return ResponseEntity.ok(measurementService.listMeasurementByParentWithView(measurementId,  lastTimestamp, limit));
@@ -83,7 +83,7 @@ public class MeasurementController {
     public ResponseEntity<List<Object[]>> listMeasurementByParent(
             @PathVariable Long measurementId,
             @RequestParam("lastTimestamp") Instant lastTimestamp,
-            @RequestParam(value = "limit", defaultValue = "999999999999999999999999999") Integer limit
+            @RequestParam(value = "limit", defaultValue = "99999999") Integer limit
     ){
         return ResponseEntity.ok(measurementService.listMeasurementByParent(measurementId,  lastTimestamp, limit));
     }
