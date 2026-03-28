@@ -46,13 +46,6 @@ public class MeasurementService {
 //        return measurement;
     }
 
-    /*
-    {
-    type:value,
-    type:value,
-    instant,
-    }
-    */
 
     public void saveAll(MeasurementType capability,Long sensorId, Proto.SensorReadingBatch batch) {
         List<MeasurementValue> measurementValues = new ArrayList<>();
