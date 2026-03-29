@@ -122,6 +122,11 @@ public class MeasurementService {
         measurement.setVirtualSensor(virtualSensor);
         return measurementRepository.save(measurement);
     }
+
+    public void deleteMeasurement(Long measurementId) {
+        measurementRepository.deleteById(measurementId);
+    }
+
     public List<MeasurementValueView> listMeasurementByParentWithView(Long measurementId, Instant start, Instant end, int limit) {
         long startTime = System.nanoTime();
         System.out.printf("[SERVICE][VIEW] measurementId=%d, start=%s, end=%s, limit=%d%n",
