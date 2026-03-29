@@ -136,11 +136,14 @@ public class MeasurementService {
         return measurementValueRepository.findRaw(measurementId, lastTimeStamp, limit);
     }
 
-    public  Proto.SensorReadingsResponse listMeasurementByParentWithProtoBuffer(Long measurementId, Instant lastTimestamp, Integer limit) {
 
-        var values = listMeasurementByParentWithView(measurementId, lastTimestamp, limit);
-        Proto.SensorReadingsResponse.Builder readingsBuilder =  Proto.SensorReadingsResponse.newBuilder();
+    public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBuffer(
+            Long measurementId, Instant lastTimestamp, Integer limit) {
 
+        List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, lastTimestamp, limit);
+        Proto.SensorReadingsResponse.Builder readingsBuilder = Proto.SensorReadingsResponse.newBuilder();
+
+        // Loop sequencial
         for (MeasurementValueView mv : values) {
             Proto.SensorReadingResponse reading = Proto.SensorReadingResponse.newBuilder()
                     .setTimestamp(mv.getTimestamp().toEpochMilli())
@@ -149,6 +152,26 @@ public class MeasurementService {
 
             readingsBuilder.addReadings(reading);
         }
+
+        return readingsBuilder.build();
+    }
+
+    public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBufferParallel(
+            Long measurementId, Instant lastTimestamp, Integer limit) {
+
+        List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, lastTimestamp, limit);
+
+        // Cria cada leitura em paralelo
+        List<Proto.SensorReadingResponse> readingList = values.parallelStream()
+                .map(mv -> Proto.SensorReadingResponse.newBuilder()
+                        .setTimestamp(mv.getTimestamp().toEpochMilli())
+                        .setValue((float) mv.getValue())
+                        .build())
+                .toList(); // Java 16+ ou use collect(Collectors.toList())
+
+        // Adiciona tudo de uma vez
+        Proto.SensorReadingsResponse.Builder readingsBuilder = Proto.SensorReadingsResponse.newBuilder();
+        readingsBuilder.addAllReadings(readingList);
 
         return readingsBuilder.build();
     }

@@ -89,6 +89,17 @@ public class MeasurementController {
         return ResponseEntity.ok(measurementService.listMeasurementByParentWithProtoBuffer(measurementId,  lastTimestamp, limit));
     }
 
+    @GetMapping(value = "{measurementId}/history/protobuf_parallel/", produces = "application/x-protobuf")
+    public ResponseEntity<Proto.SensorReadingsResponse> listMeasurementByParentWithProtoBufferParallel(
+            @PathVariable Long measurementId,
+            @RequestParam("lastTimestamp") Instant lastTimestamp,
+            @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
+    ){
+
+        return ResponseEntity.ok(measurementService.listMeasurementByParentWithProtoBufferParallel(measurementId,  lastTimestamp, limit));
+    }
+
+
 
     @GetMapping("{measurementId}/history/")
     public ResponseEntity<List<Object[]>> listMeasurementByParent(
