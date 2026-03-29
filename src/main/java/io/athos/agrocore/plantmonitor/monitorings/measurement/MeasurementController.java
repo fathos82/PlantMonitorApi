@@ -72,8 +72,8 @@ public class MeasurementController {
     @GetMapping("{measurementId}/history/view/")
     public ResponseEntity<List<MeasurementValueView>> listMeasurementByParentWithView(
             @PathVariable Long measurementId,
-            @RequestParam("start") Instant start,
-            @RequestParam("start") Instant end,
+            @RequestParam(value = "start", required = true) Instant start,
+            @RequestParam(value = "start",  required = true) Instant end,
             @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
             ){
 

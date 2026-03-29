@@ -128,51 +128,63 @@ public class MeasurementService {
     }
 
     public List<MeasurementValueView> listMeasurementByParentWithView(Long measurementId, Instant start, Instant end, int limit) {
-        return measurementValueRepository.findMeasurementValuesWithView(measurementId, start, end, limit);
+        System.out.println("[SERVICE][VIEW] measurementId=" + measurementId + ", start=" + start + ", end=" + end + ", limit=" + limit);
 
+        List<MeasurementValueView> values = measurementValueRepository.findMeasurementValuesWithView(measurementId, start, end, limit);
+
+        System.out.println("[SERVICE][VIEW] Result size: " + values.size());
+        return values;
     }
 
     public List<Object[]> listMeasurementByParent(Long measurementId, Instant start, Instant end, int limit){
-        return measurementValueRepository.findRaw(measurementId,  start,  end, limit);
+        System.out.println("[SERVICE][RAW] measurementId=" + measurementId + ", start=" + start + ", end=" + end + ", limit=" + limit);
+
+        List<Object[]> values = measurementValueRepository.findRaw(measurementId, start, end, limit);
+
+        System.out.println("[SERVICE][RAW] Result size: " + values.size());
+        return values;
     }
 
-
     public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBuffer(
-            Long measurementId,Instant start, Instant end, Integer limit) {
+            Long measurementId, Instant start, Instant end, Integer limit) {
+
+        System.out.println("[SERVICE][PROTO] measurementId=" + measurementId + ", start=" + start + ", end=" + end + ", limit=" + limit);
 
         List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, start, end, limit);
         Proto.SensorReadingsResponse.Builder readingsBuilder = Proto.SensorReadingsResponse.newBuilder();
 
-        // Loop sequencial
         for (MeasurementValueView mv : values) {
             Proto.SensorReadingResponse reading = Proto.SensorReadingResponse.newBuilder()
                     .setTimestamp(mv.getTimestamp().toEpochMilli())
                     .setValue((float) mv.getValue())
                     .build();
-
             readingsBuilder.addReadings(reading);
         }
 
-        return readingsBuilder.build();
+        Proto.SensorReadingsResponse response = readingsBuilder.build();
+        System.out.println("[SERVICE][PROTO] Number of readings: " + response.getReadingsCount());
+        return response;
     }
 
     public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBufferParallel(
             Long measurementId, Instant start, Instant end, Integer limit) {
 
+        System.out.println("[SERVICE][PROTO_PARALLEL] measurementId=" + measurementId + ", start=" + start + ", end=" + end + ", limit=" + limit);
+
         List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, start, end, limit);
 
-        // Cria cada leitura em paralelo
         List<Proto.SensorReadingResponse> readingList = values.parallelStream()
                 .map(mv -> Proto.SensorReadingResponse.newBuilder()
                         .setTimestamp(mv.getTimestamp().toEpochMilli())
                         .setValue((float) mv.getValue())
                         .build())
-                .toList(); // Java 16+ ou use collect(Collectors.toList())
+                .toList();
 
-        // Adiciona tudo de uma vez
         Proto.SensorReadingsResponse.Builder readingsBuilder = Proto.SensorReadingsResponse.newBuilder();
         readingsBuilder.addAllReadings(readingList);
 
-        return readingsBuilder.build();
+        Proto.SensorReadingsResponse response = readingsBuilder.build();
+        System.out.println("[SERVICE][PROTO_PARALLEL] Number of readings: " + response.getReadingsCount());
+        return response;
     }
 }
