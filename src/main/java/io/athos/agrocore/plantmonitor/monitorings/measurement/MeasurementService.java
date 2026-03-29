@@ -122,54 +122,52 @@ public class MeasurementService {
         measurement.setVirtualSensor(virtualSensor);
         return measurementRepository.save(measurement);
     }
-
-    public void deleteMeasurement(Long measurementId) {
-        measurementRepository.deleteById(measurementId);
-    }
-
     public List<MeasurementValueView> listMeasurementByParentWithView(Long measurementId, Instant start, Instant end, int limit) {
-        System.out.println("[SERVICE][VIEW] measurementId=" + measurementId + ", start=" + start + ", end=" + end + ", limit=" + limit);
+        long startTime = System.nanoTime();
+        System.out.printf("[SERVICE][VIEW] measurementId=%d, start=%s, end=%s, limit=%d%n",
+                measurementId, start, end, limit);
 
         List<MeasurementValueView> values = measurementValueRepository.findMeasurementValuesWithView(measurementId, start, end, limit);
 
-        System.out.println("[SERVICE][VIEW] Result size: " + values.size());
-        return values;
-    }
+        long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+        System.out.printf("[SERVICE][VIEW] Result size=%d, Duration=%dms%n", values.size(), durationMs);
 
-    public List<Object[]> listMeasurementByParent(Long measurementId, Instant start, Instant end, int limit){
-        System.out.println("[SERVICE][RAW] measurementId=" + measurementId + ", start=" + start + ", end=" + end + ", limit=" + limit);
-
-        List<Object[]> values = measurementValueRepository.findRaw(measurementId, start, end, limit);
-
-        System.out.println("[SERVICE][RAW] Result size: " + values.size());
         return values;
     }
 
     public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBuffer(
             Long measurementId, Instant start, Instant end, Integer limit) {
 
-        System.out.println("[SERVICE][PROTO] measurementId=" + measurementId + ", start=" + start + ", end=" + end + ", limit=" + limit);
+        long startTime = System.nanoTime();
+        System.out.printf("[SERVICE][PROTO] measurementId=%d, start=%s, end=%s, limit=%d%n",
+                measurementId, start, end, limit);
 
         List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, start, end, limit);
-        Proto.SensorReadingsResponse.Builder readingsBuilder = Proto.SensorReadingsResponse.newBuilder();
 
+        Proto.SensorReadingsResponse.Builder readingsBuilder = Proto.SensorReadingsResponse.newBuilder();
         for (MeasurementValueView mv : values) {
-            Proto.SensorReadingResponse reading = Proto.SensorReadingResponse.newBuilder()
-                    .setTimestamp(mv.getTimestamp().toEpochMilli())
-                    .setValue((float) mv.getValue())
-                    .build();
-            readingsBuilder.addReadings(reading);
+            readingsBuilder.addReadings(
+                    Proto.SensorReadingResponse.newBuilder()
+                            .setTimestamp(mv.getTimestamp().toEpochMilli())
+                            .setValue((float) mv.getValue())
+                            .build()
+            );
         }
 
         Proto.SensorReadingsResponse response = readingsBuilder.build();
-        System.out.println("[SERVICE][PROTO] Number of readings: " + response.getReadingsCount());
+        long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+        System.out.printf("[SERVICE][PROTO] Number of readings=%d, Duration=%dms%n",
+                response.getReadingsCount(), durationMs);
+
         return response;
     }
 
     public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBufferParallel(
             Long measurementId, Instant start, Instant end, Integer limit) {
 
-        System.out.println("[SERVICE][PROTO_PARALLEL] measurementId=" + measurementId + ", start=" + start + ", end=" + end + ", limit=" + limit);
+        long startTime = System.nanoTime();
+        System.out.printf("[SERVICE][PROTO_PARALLEL] measurementId=%d, start=%s, end=%s, limit=%d%n",
+                measurementId, start, end, limit);
 
         List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, start, end, limit);
 
@@ -184,7 +182,10 @@ public class MeasurementService {
         readingsBuilder.addAllReadings(readingList);
 
         Proto.SensorReadingsResponse response = readingsBuilder.build();
-        System.out.println("[SERVICE][PROTO_PARALLEL] Number of readings: " + response.getReadingsCount());
+        long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+        System.out.printf("[SERVICE][PROTO_PARALLEL] Number of readings=%d, Duration=%dms%n",
+                response.getReadingsCount(), durationMs);
+
         return response;
     }
 }
