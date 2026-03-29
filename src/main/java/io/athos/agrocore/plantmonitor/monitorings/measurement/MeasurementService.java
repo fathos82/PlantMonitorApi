@@ -52,7 +52,7 @@ public class MeasurementService {
         long baseTimestamp = batch.getBaseTimestamp();
         for (Proto.SensorReading sensorReading : batch.getReadingsList()) {
             long timestampRealMs = baseTimestamp + sensorReading.getDeltaMs();
-            MeasurementValue measurementValue = new MeasurementValue(measurement,Instant.ofEpochMilli(timestampRealMs), sensorReading.getValue());
+            MeasurementValue measurementValue = new MeasurementValue(measurement,Instant.ofEpochMilli(timestampRealMs), Math.round(sensorReading.getValue() * 100.0) / 100.0);
             measurementValues.add(measurementValue);
         }
         measurementValueRepository.saveAll(measurementValues);
@@ -127,20 +127,20 @@ public class MeasurementService {
         measurementRepository.deleteById(measurementId);
     }
 
-    public List<MeasurementValueView> listMeasurementByParentWithView(Long measurementId, Instant lastTimeStamp, int limit) {
-        return measurementValueRepository.findMeasurementValuesWithView(measurementId, lastTimeStamp, limit);
+    public List<MeasurementValueView> listMeasurementByParentWithView(Long measurementId, Instant start, Instant end, int limit) {
+        return measurementValueRepository.findMeasurementValuesWithView(measurementId, start, end, limit);
 
     }
 
-    public List<Object[]> listMeasurementByParent(Long measurementId, Instant lastTimeStamp, int limit){
-        return measurementValueRepository.findRaw(measurementId, lastTimeStamp, limit);
+    public List<Object[]> listMeasurementByParent(Long measurementId, Instant start, Instant end, int limit){
+        return measurementValueRepository.findRaw(measurementId,  start,  end, limit);
     }
 
 
     public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBuffer(
-            Long measurementId, Instant lastTimestamp, Integer limit) {
+            Long measurementId,Instant start, Instant end, Integer limit) {
 
-        List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, lastTimestamp, limit);
+        List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, start, end, limit);
         Proto.SensorReadingsResponse.Builder readingsBuilder = Proto.SensorReadingsResponse.newBuilder();
 
         // Loop sequencial
@@ -157,9 +157,9 @@ public class MeasurementService {
     }
 
     public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBufferParallel(
-            Long measurementId, Instant lastTimestamp, Integer limit) {
+            Long measurementId, Instant start, Instant end, Integer limit) {
 
-        List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, lastTimestamp, limit);
+        List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, start, end, limit);
 
         // Cria cada leitura em paralelo
         List<Proto.SensorReadingResponse> readingList = values.parallelStream()

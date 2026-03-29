@@ -40,32 +40,35 @@ public interface ValueMeasurementRepository extends JpaRepository<MeasurementVal
            mv.value AS value
     FROM measurement_value mv
     WHERE mv.measurement_parent_id = :id
-      AND mv.timestamp < :lastTimestamp
+      AND mv.timestamp >= :startTimestamp
+      AND mv.timestamp <= :endTimestamp
     ORDER BY mv.timestamp DESC, mv.id DESC
     LIMIT :limit
 """, nativeQuery = true)
     List<MeasurementValueView> findMeasurementValuesWithView(
             @Param("id") Long id,
-            @Param("lastTimestamp") Instant lastTimestamp,
+            @Param("startTimestamp") Instant start,
+            @Param("endTimestamp") Instant end,
             @Param("limit") int limit
     );
 
 
     @Query(value = """
-    SELECT mv.timestamp AS time,
+    SELECT mv.timestamp AS timestamp,
            mv.value AS value
     FROM measurement_value mv
     WHERE mv.measurement_parent_id = :id
-    AND mv.timestamp < :lastTimestamp
+      AND mv.timestamp >= :startTimestamp
+      AND mv.timestamp <= :endTimestamp
     ORDER BY mv.timestamp DESC, mv.id DESC
     LIMIT :limit
 """, nativeQuery = true)
     List<Object[]> findRaw(
             @Param("id") Long id,
-            @Param("lastTimestamp") Instant lastTimestamp,
+            @Param("startTimestamp") Instant start,
+            @Param("endTimestamp") Instant end,
             @Param("limit") int limit
-    );
-// TODO:
+    );// TODO:
 //@GetMapping
 //public void stream(HttpServletResponse response) throws IOException {
 //    var writer = response.getWriter();
