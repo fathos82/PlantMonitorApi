@@ -11,3 +11,14 @@ message SensorReadingBatch {
   int64 base_timestamp = 1;
   repeated SensorReading readings = 2;
 }
+
+
+message SensorReadingResponse {
+  int64 timestamp = 1;
+  float value    = 2;
+}
+
+
+message SensorReadingsResponse {
+  repeated SensorReadingResponse readings = 1;
+}

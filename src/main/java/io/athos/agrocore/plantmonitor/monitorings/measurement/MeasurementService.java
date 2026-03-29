@@ -6,6 +6,7 @@ import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoringService;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -133,5 +134,22 @@ public class MeasurementService {
 
     public List<Object[]> listMeasurementByParent(Long measurementId, Instant lastTimeStamp, int limit){
         return measurementValueRepository.findRaw(measurementId, lastTimeStamp, limit);
+    }
+
+    public  Proto.SensorReadingsResponse listMeasurementByParentWithProtoBuffer(Long measurementId, Instant lastTimestamp, Integer limit) {
+
+        var values = listMeasurementByParentWithView(measurementId, lastTimestamp, limit);
+        Proto.SensorReadingsResponse.Builder readingsBuilder =  Proto.SensorReadingsResponse.newBuilder();
+
+        for (MeasurementValueView mv : values) {
+            Proto.SensorReadingResponse reading = Proto.SensorReadingResponse.newBuilder()
+                    .setTimestamp(mv.getTimestamp().toEpochMilli())
+                    .setValue((float) mv.getValue())
+                    .build();
+
+            readingsBuilder.addReadings(reading);
+        }
+
+        return readingsBuilder.build();
     }
 }

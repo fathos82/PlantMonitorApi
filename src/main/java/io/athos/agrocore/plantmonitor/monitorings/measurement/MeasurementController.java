@@ -1,5 +1,6 @@
 package io.athos.agrocore.plantmonitor.monitorings.measurement;
 
+import io.athos.agrocore.plantmonitor.devices.sensors.Proto;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.MeasurementResponse;
@@ -76,6 +77,16 @@ public class MeasurementController {
             ){
 
         return ResponseEntity.ok(measurementService.listMeasurementByParentWithView(measurementId,  lastTimestamp, limit));
+    }
+
+    @GetMapping(value = "{measurementId}/history/protobuf/", produces = "application/x-protobuf")
+    public ResponseEntity<Proto.SensorReadingsResponse> listMeasurementByParentWithProtoBuffer(
+            @PathVariable Long measurementId,
+            @RequestParam("lastTimestamp") Instant lastTimestamp,
+            @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
+    ){
+
+        return ResponseEntity.ok(measurementService.listMeasurementByParentWithProtoBuffer(measurementId,  lastTimestamp, limit));
     }
 
 
