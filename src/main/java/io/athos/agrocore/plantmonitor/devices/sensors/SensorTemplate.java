@@ -1,5 +1,6 @@
 package io.athos.agrocore.plantmonitor.devices.sensors;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoring;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementType;
 import jakarta.persistence.*;
@@ -13,6 +14,13 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@JsonPropertyOrder({
+        "id",
+        "name",
+        "model",
+        "capabilities",
+        "defaultParameters",
+})
 public class SensorTemplate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +33,5 @@ public class SensorTemplate {
     @ElementCollection
     private Map<String, String> defaultParameters = new HashMap<>();
     private String model;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private PlantMonitoring plantMonitoring;
-
-
 
 }

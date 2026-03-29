@@ -24,7 +24,7 @@ public class SensorTemplateSeeder implements ApplicationRunner {
     private final SensorTemplateRepository sensorTemplateRepository;
     @Autowired
     private final JdbcTemplate jdbc;
-    
+
 
     @Override
     @Transactional

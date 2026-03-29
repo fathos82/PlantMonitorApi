@@ -55,7 +55,7 @@ public class VirtualSensor {
         this.sensorTemplate = sensorTemplate;
         this.parameters = parameters;
         if (parameters == null || parameters.isEmpty()) {
-            this.parameters = sensorTemplate.getDefaultParameters();
+            this.parameters = new HashMap<>(sensorTemplate.getDefaultParameters());
         }
     }
 
