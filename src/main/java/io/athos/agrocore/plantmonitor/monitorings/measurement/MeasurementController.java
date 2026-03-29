@@ -73,7 +73,7 @@ public class MeasurementController {
     public ResponseEntity<List<MeasurementValueView>> listMeasurementByParentWithView(
             @PathVariable Long measurementId,
             @RequestParam(value = "start", required = true) Instant start,
-            @RequestParam(value = "start",  required = true) Instant end,
+            @RequestParam(value = "end",  required = true) Instant end,
             @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
             ){
 
@@ -84,7 +84,7 @@ public class MeasurementController {
     public ResponseEntity<Proto.SensorReadingsResponse> listMeasurementByParentWithProtoBuffer(
             @PathVariable Long measurementId,
             @RequestParam("start") Instant start,
-            @RequestParam("start") Instant end,
+            @RequestParam("end") Instant end,
             @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
     ){
 
@@ -95,7 +95,7 @@ public class MeasurementController {
     public ResponseEntity<Proto.SensorReadingsResponse> listMeasurementByParentWithProtoBufferParallel(
             @PathVariable Long measurementId,
             @RequestParam("start") Instant start,
-            @RequestParam("start") Instant end,
+            @RequestParam("end") Instant end,
             @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
     ){
 
@@ -108,7 +108,7 @@ public class MeasurementController {
     public ResponseEntity<List<Object[]>> listMeasurementByParent(
             @PathVariable Long measurementId,
             @RequestParam("start") Instant start,
-            @RequestParam("start") Instant end,
+            @RequestParam("end") Instant end,
             @RequestParam(value = "limit", defaultValue = "99999999") Integer limit
     ){
         return ResponseEntity.ok(measurementService.listMeasurementByParent(measurementId,  start, end, limit));
