@@ -19,9 +19,6 @@ import java.util.Map;
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class VirtualSensor {
-
-
-
     @Id
     @GeneratedValue
     private Long id;
@@ -30,26 +27,21 @@ public class VirtualSensor {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private PlantMonitoring plantMonitoring;
-    @OneToOne
+    @ManyToOne
     private SensorTemplate sensorTemplate;
     @UpdateTimestamp
     private LocalDateTime lastDataAt;
     @ElementCollection
     private Map<String, String> parameters = new HashMap<>();
-
-
-
     private boolean hasError;
     @Transient
     public boolean isWorking() {
         return lastDataAt != null &&
                 lastDataAt.isAfter(LocalDateTime.now().minusSeconds(25)) && !hasError ;
     }
-
     public void onDataReceived() {
         this.lastDataAt = LocalDateTime.now();
     }
-
     public VirtualSensor(SensorTemplate sensorTemplate, Device device, Map<String, String> parameters){
         this.device = device;
         this.sensorTemplate = sensorTemplate;
@@ -58,6 +50,4 @@ public class VirtualSensor {
             this.parameters = new HashMap<>(sensorTemplate.getDefaultParameters());
         }
     }
-
-
 }

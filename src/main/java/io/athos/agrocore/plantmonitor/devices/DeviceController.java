@@ -26,27 +26,27 @@ public class DeviceController {
     }
 
     @PatchMapping("{deviceId}")
-    public ResponseEntity<DeviceResponse> updateDevice(@PathVariable Long deviceId, @Valid @RequestBody UpdateDeviceRequest request){
-        Device  device = deviceService.updateDevice(deviceId, request);
+    public ResponseEntity<DeviceResponse> updateDevice(@PathVariable Long deviceId, @Valid @RequestBody UpdateDeviceRequest request, @AuthenticationPrincipal SecurityUser authenticatedUser){
+        Device  device = deviceService.updateDevice(deviceId, request, authenticatedUser);
         return ResponseEntity.ok(new DeviceResponse(device));
     }
 
     @DeleteMapping("{deviceId}/")
     public ResponseEntity<Void> deleteDeviceFromAuthenticatedUser(@PathVariable Long deviceId, @AuthenticationPrincipal SecurityUser authenticatedUser) {
-        deviceService.deleteDeviceForAuthenticatedUser(deviceId, authenticatedUser.getPersistentUser());
+        deviceService.deleteDeviceByIdFromAuthenticatedUser(deviceId, authenticatedUser);
         return ResponseEntity.noContent().build();
     }
 
 
     @GetMapping("{id}/")
-    public ResponseEntity<DeviceResponse> findDeviceById(@PathVariable Long id){
-        Device  device = deviceService.findDeviceById(id);
+    public ResponseEntity<DeviceResponse> findDeviceById(@PathVariable Long id,  @AuthenticationPrincipal SecurityUser authenticatedUser){
+        Device  device = deviceService.getDeviceByIdFromAuthenticatedUser(id, authenticatedUser);
         return ResponseEntity.ok(new DeviceResponse(device));
     }
 
     @GetMapping("{userId}/")
-    public ResponseEntity<List<DeviceResponse>> findDevicesFromAuthenticatedUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(deviceService.findDevicesByUserId(userId)
+    public ResponseEntity<List<DeviceResponse>> findDevicesFromAuthenticatedUser(@AuthenticationPrincipal SecurityUser authenticatedUser) {
+        return ResponseEntity.ok(deviceService.findDevicesByAuthenticatedUser(authenticatedUser)
                 .stream().map(DeviceResponse::new)
                 .toList());
     }

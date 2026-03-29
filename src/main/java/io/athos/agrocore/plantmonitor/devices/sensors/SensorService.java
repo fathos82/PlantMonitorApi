@@ -5,6 +5,7 @@ import io.athos.agrocore.plantmonitor.devices.DeviceService;
 import io.athos.agrocore.plantmonitor.devices.sensors.dtos.RegisterSensorRequest;
 import io.athos.agrocore.plantmonitor.devices.sensors.dtos.UpdateSensorRequest;
 import io.athos.agrocore.plantmonitor.errors.NotFoundException;
+import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,32 +26,37 @@ public class SensorService {
     @Autowired
     private SensorTemplateRepository sensorTemplateRepository;
 
+    public VirtualSensor getSensorByIdAndAuthenticatedUser(Long sensorId, SecurityUser authenticatedUser) {
+        return virtualSensorRepository.findById_AndDevice_User_Id(sensorId, authenticatedUser.getPersistentUser().getId())
+                .orElseThrow(() -> new NotFoundException(VirtualSensor.class, sensorId));
+    }
+
     public VirtualSensor getSensorById(Long sensorId) {
         return virtualSensorRepository.findById(sensorId)
                 .orElseThrow(() -> new NotFoundException(VirtualSensor.class, sensorId));
     }
 
 
-    public VirtualSensor createSensor(RegisterSensorRequest request) {
-        System.out.println("REGISTERING SENSOR");
-        Device device = deviceService.getDeviceByUUID(request.deviceUid());
+
+    public VirtualSensor createSensor(RegisterSensorRequest request, SecurityUser authenticatedUser) {
+        Device device = deviceService.getDeviceByUUID(request.deviceUid(), authenticatedUser);
         SensorTemplate sensorTemplate = sensorTemplateRepository.findById(request.sensorTemplateId())
                 .orElseThrow(() -> new  NotFoundException(SensorTemplate.class, request.sensorTemplateId()));
         VirtualSensor sensor = new VirtualSensor(sensorTemplate, device, request.parameters());
         return virtualSensorRepository.save(sensor);
     }
 
-    public VirtualSensor updateSensor(Long sensorId, UpdateSensorRequest request) {
-        VirtualSensor virtualSensor = getSensorById(sensorId);
+    public VirtualSensor updateSensor(Long sensorId, UpdateSensorRequest request, SecurityUser authenticatedUser) {
+        VirtualSensor virtualSensor = getSensorByIdAndAuthenticatedUser(sensorId, authenticatedUser);
         virtualSensor.setParameters(request.parameters());
         return virtualSensorRepository.save(virtualSensor);
     }
 
-    public void deleteSensor(Long sensorId) {
-        virtualSensorRepository.deleteById(sensorId);
+    public void deleteSensor(Long sensorId, SecurityUser authenticatedUser) {
+        virtualSensorRepository.deleteById_AndDevice_User_Id(sensorId, authenticatedUser.getPersistentUser().getId());
     }
-    public  List<VirtualSensor> listSensorByDiveUuid(String deviceUuId) {
-        return virtualSensorRepository.findAllByDevice_DeviceUuid(deviceUuId);
+    public  List<VirtualSensor> listSensorByDeviceUuid(String deviceUuId, SecurityUser authenticatedUser) {
+        return virtualSensorRepository.findAllByDevice_DeviceUuid_AndDevice_User_Id(deviceUuId, authenticatedUser.getPersistentUser().getId());
 
     }
 
@@ -65,7 +71,8 @@ public class SensorService {
         virtualSensorRepository.save(virtualSensor);
     }
 
-    public Page<SensorNotify> listError(Long sensorId, Pageable pageable) {
+
+    public Page<SensorNotify> listError(Long sensorId, Pageable pageable, SecurityUser authenticatedUser) {
         return sensorNotifyRepository.findBySensorIdAndNotifyType(sensorId, SENSOR_ERROR, pageable);
     }
 

@@ -4,9 +4,11 @@ import io.athos.agrocore.plantmonitor.devices.sensors.Proto;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.MeasurementResponse;
+import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -19,55 +21,22 @@ public class MeasurementController {
     MeasurementService measurementService;
 
     @PostMapping // todo: maybe add type (ex: temperature)
-    public ResponseEntity<Void> addMeasurement(@Valid @RequestBody AddMeasurementRequest request){
-        measurementService.createMeasurement(request);
+    public ResponseEntity<Void> addMeasurement(@Valid @RequestBody AddMeasurementRequest request, @AuthenticationPrincipal SecurityUser authenticatedUser){
+        measurementService.createMeasurement(request, authenticatedUser);
         return ResponseEntity.ok().build();
     }
 
 
     @PatchMapping("{measurementId}/")
-    public ResponseEntity<MeasurementResponse> changeSensorFromMeasurement(@PathVariable Long measurementId,@Valid @RequestBody ChangeSensorRequest request){
-        return ResponseEntity.ok(new MeasurementResponse(measurementService.changeSensor(measurementId, request)));
+    public ResponseEntity<MeasurementResponse> changeSensorFromMeasurement(@PathVariable Long measurementId, @Valid @RequestBody ChangeSensorRequest request, @AuthenticationPrincipal SecurityUser authenticatedUser){
+        return ResponseEntity.ok(new MeasurementResponse(measurementService.changeSensor(measurementId, request, authenticatedUser)));
     }
 
     @DeleteMapping("{measurementId}") // todo: maybe add type (ex: temperature)
-    public ResponseEntity<Void> deleteMeasurement(@PathVariable Long measurementId){
-        measurementService.deleteMeasurement(measurementId);
+    public ResponseEntity<Void> deleteMeasurement(@PathVariable Long measurementId, @AuthenticationPrincipal SecurityUser authenticatedUser){
+        measurementService.deleteMeasurement(measurementId,authenticatedUser);
         return ResponseEntity.noContent().build();
     }
-//    @GetMapping
-//    public ResponseEntity<List<MeasurementValue>> listMeasurement(
-//            @PathVariable Long plantId,
-//            @RequestParam(required = true)  MeasurementType measurementType,
-//            @RequestHeader(value = "If-Modified-Since", required = false) String ifModifiedSince){
-//        // case has not measurementType
-//        if (ifModifiedSince != null && measurementService.hasMonitoringModifiedSince(ifModifiedSince)){
-//            ResponseEntity.status(HttpStatus.NOT_MODIFIED).lastModified(measurementService.getLastModified(plantId, measurementType)).build();
-//        }
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .lastModified(measurementService.getLastModified(plantId, measurementType))
-//                .body(measurementService.listMeasurementValue(plantId, measurementType, ifModifiedSince));
-//    }
-
-//
-//    @GetMapping("{measurementType}/")
-//    public ResponseEntity<List<MeasurementResponse>> listMeasurementByParentAndMeasurementType(
-//            @PathVariable Long plantId,
-//            @RequestHeader(value = "If-Modified-Since", required = false) String ifModifiedSince,
-//            @PathVariable MeasurementType measurementType){
-////        // case has not measurementType
-//        if (ifModifiedSince != null && measurementService.hasMonitoringModifiedSince(ifModifiedSince)){
-//            ResponseEntity.status(HttpStatus.NOT_MODIFIED).lastModified(measurementService.getLastModified(plantId, measurementType)).build();
-//        }
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .lastModified(measurementService.getLastModified(plantId, measurementType))
-//                .body(measurementService
-//                        .listMeasurementByParent(plantId, measurementType, ifModifiedSince)
-//                        .stream()
-//                        .map(MeasurementResponse::new).toList());
-//    }
 
     @GetMapping("{measurementId}/history/view/")
     public ResponseEntity<List<MeasurementValueView>> listMeasurementByParentWithView(

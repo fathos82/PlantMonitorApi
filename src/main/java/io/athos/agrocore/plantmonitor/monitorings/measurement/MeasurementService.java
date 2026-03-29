@@ -6,13 +6,11 @@ import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoringService;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
+import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,13 +31,13 @@ public class MeasurementService {
 
 // TODO:   server.compression.enabled=true
 
-    public void createMeasurement(AddMeasurementRequest request){
+    public void createMeasurement(AddMeasurementRequest request, SecurityUser authenticatedUser){
         Measurement  measurement = new Measurement();
 
         /// todo: verificar se o sensor de capacidade de monitorar essa medida
         measurement.setMeasurementType(request.measurementType());
-        measurement.setPlantMonitoring(plantMonitoringService.findPlantMonitoringById(request.plantId()));
-        measurement.setVirtualSensor(sensorService.getSensorById(request.sensorId()));
+        measurement.setPlantMonitoring(plantMonitoringService.findPlantMonitoringById(request.plantId(), authenticatedUser));
+        measurement.setVirtualSensor(sensorService.getSensorByIdAndAuthenticatedUser(request.sensorId(), authenticatedUser));
         measurementRepository.save(measurement);
 //        return measurement;
     }
@@ -62,15 +60,20 @@ public class MeasurementService {
     Measurement findById(Long measurementId) {
         return measurementRepository.findById(measurementId).orElseThrow(() -> new NotFoundException(Measurement.class.getSimpleName(), measurementId));
     }
-    public Measurement changeSensor(Long measurementId, ChangeSensorRequest request) {
+
+    Measurement getByIdAndAuthenticatedUser(Long measurementId, SecurityUser authenticatedUser) {
+        return measurementRepository.findByIdAndVirtualSensor_Device_User_Id(measurementId, authenticatedUser.getPersistentUser().getId()).orElseThrow(() -> new NotFoundException(Measurement.class.getSimpleName(), measurementId));
+    }
+    public Measurement changeSensor(Long measurementId, ChangeSensorRequest request, SecurityUser authenticatedUser) {
         Measurement measurement =  findById(measurementId);
-        VirtualSensor virtualSensor = sensorService.getSensorById(request.sensorId());
+        VirtualSensor virtualSensor = sensorService.getSensorByIdAndAuthenticatedUser(request.sensorId(), authenticatedUser);
         measurement.setVirtualSensor(virtualSensor);
         return measurementRepository.save(measurement);
     }
 
-    public void deleteMeasurement(Long measurementId) {
-        measurementRepository.deleteById(measurementId);
+    public void deleteMeasurement(Long measurementId, SecurityUser authenticatedUser) {
+        Measurement measurement = getByIdAndAuthenticatedUser(measurementId, authenticatedUser);
+        measurementRepository.delete(measurement);
     }
 
     public List<MeasurementValueView> listMeasurementByParentWithView(Long measurementId, Instant start, Instant end, int limit) {

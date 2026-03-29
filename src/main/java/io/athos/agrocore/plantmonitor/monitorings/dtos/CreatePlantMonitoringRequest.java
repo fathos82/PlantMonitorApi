@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record CreatePlantMonitoringRequest(
+
         @NotNull
-        Long userId,
         String commonName,
         String specieName
         // todo: Tipos de monitoramesnto
