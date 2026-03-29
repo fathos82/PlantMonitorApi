@@ -80,13 +80,13 @@ public class MeasurementController {
     }
 
     @GetMapping(value = "{measurementId}/history/protobuf/", produces = "application/x-protobuf")
-    public ResponseEntity<byte[]> listMeasurementByParentWithProtoBuffer(
+    public ResponseEntity<Proto.SensorReadingsResponse> listMeasurementByParentWithProtoBuffer(
             @PathVariable Long measurementId,
             @RequestParam("lastTimestamp") Instant lastTimestamp,
             @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
     ){
 
-        return ResponseEntity.ok(measurementService.listMeasurementByParentWithProtoBuffer(measurementId,  lastTimestamp, limit).toByteArray());
+        return ResponseEntity.ok(measurementService.listMeasurementByParentWithProtoBuffer(measurementId,  lastTimestamp, limit));
     }
 
 
