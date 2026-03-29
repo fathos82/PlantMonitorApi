@@ -1,10 +1,10 @@
 package io.athos.agrocore.plantmonitor.devices.sensors;
 
-import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoring;
 import io.athos.agrocore.plantmonitor.devices.Device;
-import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementType;
+import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoring;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -12,31 +12,32 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class  VirtualSensor {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class VirtualSensor {
 
+
+
+    @Id
+    @GeneratedValue
+    private Long id;
     @ManyToOne
     private Device device;
-    private String name; // todo: ver como esse dado sera preenchido.
-    @Enumerated(EnumType.STRING)
-    private SensorModel model;    @ElementCollection
-    @Enumerated(EnumType.STRING)
-    private Set<MeasurementType> capabilities;
-    @ElementCollection
-    private Map<String, String> parameters = new HashMap<>();
-    @UpdateTimestamp
-    private LocalDateTime lastDataAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private PlantMonitoring plantMonitoring;
+    @OneToOne
+    private SensorTemplate sensorTemplate;
+    @UpdateTimestamp
+    private LocalDateTime lastDataAt;
+    @ElementCollection
+    private Map<String, String> parameters = new HashMap<>();
+
+
 
     private boolean hasError;
     @Transient
@@ -49,7 +50,14 @@ public class  VirtualSensor {
         this.lastDataAt = LocalDateTime.now();
     }
 
-
+    public VirtualSensor(SensorTemplate sensorTemplate, Device device, Map<String, String> parameters){
+        this.device = device;
+        this.sensorTemplate = sensorTemplate;
+        this.parameters = parameters;
+        if (parameters == null || parameters.isEmpty()) {
+            this.parameters = sensorTemplate.getDefaultParameters();
+        }
+    }
 
 
 }

@@ -6,7 +6,6 @@ import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoringService;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -58,60 +57,7 @@ public class MeasurementService {
         measurementValueRepository.saveAll(measurementValues);
     }
 
-    public  List<MeasurementValue> listMeasurementValue(Long plantId, MeasurementType measurementType, String ifModifiedSince) {
-        if (ifModifiedSince != null) {
-            return measurementValueRepository.findAllByMeasurementParent_PlantMonitoring_IdAndTimestampAfter(plantId, parseIfModifiedSince(ifModifiedSince).toInstant());
-        }
-        return measurementValueRepository.findAllByMeasurementParent_PlantMonitoring_IdAndMeasurementParent_MeasurementType(plantId, measurementType);
-    }
 
-    public  List<Measurement> listMeasurementByParent(Long plantId,MeasurementType measurementType, String ifModifiedSince) {
-        if (ifModifiedSince != null) {
-
-            if (measurementType != null) {
-                return measurementRepository.findByPlant_IdAndMeasurementTypeAndValuesAfter(plantId,measurementType, parseIfModifiedSince(ifModifiedSince).toInstant());
-            }
-            return measurementRepository.findByPlant_IdAndValuesAfter(plantId, parseIfModifiedSince(ifModifiedSince).toInstant());
-        }
-
-        if (measurementType != null) {
-            return measurementRepository.findByPlantMonitoring_IdAndMeasurementTypeOrder_ValueByTimestampAsc(plantId, measurementType);
-        }
-        return measurementRepository.findByPlantMonitoring_IdOrder_ValueByTimestampAsc(plantId);
-    }
-
-    public List<Measurement>  listMeasurementByParent(Long plantId, String ifModifiedSince) {
-        if (ifModifiedSince != null) {
-            return measurementRepository.findByPlant_IdAndValuesAfter(plantId, parseIfModifiedSince(ifModifiedSince).toInstant());
-        }
-        return measurementRepository.findByPlantMonitoring_IdOrder_ValueByTimestampAsc(plantId);
-    }
-
-
-    boolean hasMonitoringModifiedSince(String ifModifiedSince) {
-        return measurementValueRepository.existsByTimestampAfter(parseIfModifiedSince(ifModifiedSince).toInstant());
-    }
-
-    ZonedDateTime parseIfModifiedSince(String ifModifiedSince) {
-        if (ifModifiedSince == null) {
-            return null;
-        }
-
-        return ZonedDateTime
-                .parse(ifModifiedSince, DateTimeFormatter.RFC_1123_DATE_TIME)
-                .withZoneSameInstant(ZoneOffset.UTC);
-    }
-
-    public long getLastModified(Long plantId, MeasurementType measurementType) {
-        Instant lastModified =
-                measurementValueRepository.findLastModified(plantId, measurementType);
-
-        if (lastModified == null) {
-            return -1; // padrão do Spring quando não há modificação
-        }
-
-        return lastModified.toEpochMilli();
-    }
 
     Measurement findById(Long measurementId) {
         return measurementRepository.findById(measurementId).orElseThrow(() -> new NotFoundException(Measurement.class.getSimpleName(), measurementId));
@@ -140,8 +86,7 @@ public class MeasurementService {
         return values;
     }
 
-    public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBuffer(
-            Long measurementId, Instant start, Instant end, Integer limit) {
+    public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBuffer(Long measurementId, Instant start, Instant end, Integer limit) {
 
         long startTime = System.nanoTime();
         System.out.printf("[SERVICE][PROTO] measurementId=%d, start=%s, end=%s, limit=%d%n",
@@ -192,5 +137,10 @@ public class MeasurementService {
                 response.getReadingsCount(), durationMs);
 
         return response;
+    }
+
+    public List<Object[]> listMeasurementByParent(
+            Long measurementId, Instant start, Instant end, Integer limit) {
+        return measurementValueRepository.findRaw(measurementId, start, end, limit);
     }
 }

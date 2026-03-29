@@ -1,5 +1,6 @@
 package io.athos.agrocore.plantmonitor.devices.sensors;
 
+import io.athos.agrocore.plantmonitor.devices.Device;
 import io.athos.agrocore.plantmonitor.devices.DeviceService;
 import io.athos.agrocore.plantmonitor.devices.sensors.dtos.RegisterSensorRequest;
 import io.athos.agrocore.plantmonitor.devices.sensors.dtos.UpdateSensorRequest;
@@ -9,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 
 import static io.athos.agrocore.plantmonitor.devices.sensors.SensorNotify.NotifyType.SENSOR_ERROR;
@@ -22,6 +22,8 @@ public class SensorService {
     private DeviceService deviceService;
     @Autowired
     private SensorNotifyRepository sensorNotifyRepository;
+    @Autowired
+    private SensorTemplateRepository sensorTemplateRepository;
 
     public VirtualSensor getSensorById(Long sensorId) {
         return virtualSensorRepository.findById(sensorId)
@@ -31,24 +33,16 @@ public class SensorService {
 
     public VirtualSensor createSensor(RegisterSensorRequest request) {
         System.out.println("REGISTERING SENSOR");
-
-        VirtualSensor virtualSensor = new VirtualSensor();
-        virtualSensor.setName(request.sensorName());
-        virtualSensor.setDevice(deviceService.getDeviceByUUID(request.deviceUid()));
-        virtualSensor.setParameters(request.parameters());
-        virtualSensor.setModel(request.model());
-//        virtualSensor.setCapabilities(new HashSet<>(request.capabilities()));
-        System.out.println("REGISTERING SENSOR ");
-
-        return virtualSensorRepository.save(virtualSensor);
+        Device device = deviceService.getDeviceByUUID(request.deviceUid());
+        SensorTemplate sensorTemplate = sensorTemplateRepository.findById(request.sensorTemplateId())
+                .orElseThrow(() -> new  NotFoundException(SensorTemplate.class, request.sensorTemplateId()));
+        VirtualSensor sensor = new VirtualSensor(sensorTemplate, device, request.parameters());
+        return virtualSensorRepository.save(sensor);
     }
 
     public VirtualSensor updateSensor(Long sensorId, UpdateSensorRequest request) {
         VirtualSensor virtualSensor = getSensorById(sensorId);
-        virtualSensor.setName(request.sensorName());
         virtualSensor.setParameters(request.parameters());
-//        virtualSensor.setModel(request.model());
-        // todo: set Parameters and model
         return virtualSensorRepository.save(virtualSensor);
     }
 
@@ -86,5 +80,9 @@ public class SensorService {
     public void activateSensor(Long sensorId) {
         VirtualSensor virtualSensor = getSensorById(sensorId);
         updateTimestamp(virtualSensor);
+    }
+
+    public List<SensorTemplate> listTemplates() {
+        return sensorTemplateRepository.findAll();
     }
 }

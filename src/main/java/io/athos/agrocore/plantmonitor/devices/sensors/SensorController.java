@@ -32,6 +32,12 @@ public class SensorController {
         return ResponseEntity.ok().build();
     }
 
+    // TODO: No futuro criar controller propria.
+    @GetMapping("templates/")
+    public ResponseEntity<List<SensorTemplate>> listTemplates(){
+        return ResponseEntity.ok(sensorService.listTemplates());
+    }
+
     @GetMapping("{sensorId}/errors/")
     public ResponseEntity<Page<SensorMessageError>> getErrors(
             @PathVariable Long sensorId,

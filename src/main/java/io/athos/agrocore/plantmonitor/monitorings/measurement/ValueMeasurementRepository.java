@@ -10,15 +10,6 @@ import java.util.List;
 
 @Repository
 public interface ValueMeasurementRepository extends JpaRepository<MeasurementValue,Long> {
-    boolean existsByIdAfter(Long idAfter);
-
-    boolean existsByTimestampAfter(Instant timestampAfter);
-
-
-    List<MeasurementValue> findAllByMeasurementParent_PlantMonitoring_IdAndMeasurementParent_MeasurementTypeAndTimestampAfter(Long measurementParent_plantMonitoring_id, MeasurementType measurementParent_measurementType, Instant timestamp);
-    List<MeasurementValue> findAllByMeasurementParent_PlantMonitoring_IdAndMeasurementParent_MeasurementType(Long measurementParent_plantMonitoring_id, MeasurementType measurementParent_measurementType);
-
-
     @Query("""
         SELECT MAX(v.timestamp)
         FROM MeasurementValue v
@@ -29,11 +20,6 @@ public interface ValueMeasurementRepository extends JpaRepository<MeasurementVal
             @Param("plantId") Long plantId,
             @Param("type") MeasurementType type
     );
-
-
-
-    List<MeasurementValue> findAllByMeasurementParent_PlantMonitoring_IdAndTimestampAfter(Long plantId, Instant instant);
-
 
     @Query(value = """
     SELECT mv.timestamp AS timestamp,
