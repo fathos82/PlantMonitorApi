@@ -21,7 +21,7 @@ public class MeasurementValueProtoRepository {
 
     private static final String BASE_QUERY = """
         SELECT mv.timestamp, mv.value
-        FROM measurement_value mv
+        FROM zmeasurement_value mv
         WHERE mv.measurement_parent_id = :id
           AND mv.timestamp >= ?
           AND mv.timestamp <= ?
@@ -48,9 +48,10 @@ public class MeasurementValueProtoRepository {
                     ResultSet.TYPE_FORWARD_ONLY,
                     ResultSet.CONCUR_READ_ONLY
             );
-            ps.setTimestamp(1, Timestamp.from(start));
-            ps.setTimestamp(2, Timestamp.from(end));
-            ps.setInt(3, limit);
+            ps.setLong(1, id);                            // measurement_parent_id = ?
+            ps.setTimestamp(2, Timestamp.from(start));    // timestamp >= ?
+            ps.setTimestamp(3, Timestamp.from(end));      // timestamp <= ?
+            ps.setInt(4, limit);                          // LIMIT ?
             ps.setFetchSize(1000);
             return ps;
         }, rs -> {
@@ -65,7 +66,6 @@ public class MeasurementValueProtoRepository {
         return response.build();
     }
 
-    // função nova — adaptive bucketing, ~1000 pontos independente do range
     public Proto.SensorReadingsResponse findAdaptiveAsProto(Long id, Instant start, Instant end) {
         String bucket = resolveBucket(start, end);
         Proto.SensorReadingsResponse.Builder response = Proto.SensorReadingsResponse.newBuilder();
@@ -75,10 +75,10 @@ public class MeasurementValueProtoRepository {
                     ResultSet.TYPE_FORWARD_ONLY,
                     ResultSet.CONCUR_READ_ONLY
             );
-            ps.setString(1, bucket);
-            ps.setLong(2, id);
-            ps.setTimestamp(3, Timestamp.from(start));
-            ps.setTimestamp(4, Timestamp.from(end));
+            ps.setString(1, bucket);                      // CAST(? AS INTERVAL)
+            ps.setLong(2, id);                            // measurement_parent_id = ?
+            ps.setTimestamp(3, Timestamp.from(start));    // BETWEEN ?
+            ps.setTimestamp(4, Timestamp.from(end));      // AND ?
             ps.setFetchSize(1000);
             return ps;
         }, rs -> {
