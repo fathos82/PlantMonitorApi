@@ -32,6 +32,12 @@ public class DeviceController {
         Device  device = deviceService.setUserToDevice(authenticatedUser, request);
         return ResponseEntity.ok(new DeviceResponse(device));
     }
+    @GetMapping("me/")
+    public ResponseEntity<List<DeviceResponse>> findDevicesFromAuthenticatedUser(@AuthenticationPrincipal SecurityUser authenticatedUser) {
+        return ResponseEntity.ok(deviceService.findDevicesByAuthenticatedUser(authenticatedUser)
+                .stream().map(DeviceResponse::new)
+                .toList());
+    }
 
     @PatchMapping("{deviceId}")
     public ResponseEntity<DeviceResponse> updateDevice(@PathVariable Long deviceId, @Valid @RequestBody UpdateDeviceRequest request, @AuthenticationPrincipal SecurityUser authenticatedUser){
@@ -58,12 +64,7 @@ public class DeviceController {
         return ResponseEntity.ok(new DeviceResponse(device));
     }
 
-    @GetMapping("{userId}/")
-    public ResponseEntity<List<DeviceResponse>> findDevicesFromAuthenticatedUser(@AuthenticationPrincipal SecurityUser authenticatedUser) {
-        return ResponseEntity.ok(deviceService.findDevicesByAuthenticatedUser(authenticatedUser)
-                .stream().map(DeviceResponse::new)
-                .toList());
-    }
+
 
 
 
