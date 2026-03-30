@@ -49,6 +49,7 @@ public class Measurement {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    // TODO: Verificar como deve funcionar esse nullable true.
     @JoinColumn(name = "virtual_sensor_id")
     private VirtualSensor virtualSensor;
 
