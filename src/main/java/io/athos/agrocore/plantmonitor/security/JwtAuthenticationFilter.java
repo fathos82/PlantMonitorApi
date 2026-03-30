@@ -35,38 +35,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // Endpoints públicos
         if (path.startsWith("/api/auth/") && !path.equals("/api/auth/me/")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-
         try {
             String token = extractTokenFromHeader(request);
-            if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            // Se não há token, apenas continua — Spring Security decide se o endpoint precisa de auth
+            if (token == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 String username = jwtService.extractUsername(token);
                 SecurityUser securityUser = securityUserDetailService.loadUserByUsername(username);
+
                 if (jwtService.validateToken(token, securityUser)) {
                     var authentication = new UsernamePasswordAuthenticationToken(
                             securityUser, null, securityUser.getAuthorities()
                     );
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-            } else if (request.getHeader("Authorization") == null || token == null) {
-                throw new JwtException("Token vazio");
             }
+
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UsernameNotFoundException ex) {
             writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token inválido ou expirado");
-
         } catch (JwtException ex) {
             writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
         }
-
     }
 
     private String extractTokenFromHeader(HttpServletRequest request) {

@@ -14,6 +14,7 @@ import io.athos.agrocore.plantmonitor.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -28,6 +29,8 @@ public class AuthService {
     private RefreshTokenRepository refreshTokenRepository;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public AuthTokenResponse generateTokenPair(UserDetails userDetails){
         final String accessToken = jwtService.generateAccessToken(userDetails.getUsername());
@@ -43,12 +46,11 @@ public class AuthService {
 
 
     public User registerUser(RegisterAuthRequest registerRequest) {
-        User user = userService.createUser(registerRequest);
+        User user = userService.createUser(registerRequest, passwordEncoder.encode(registerRequest.password()));
 //        generateTokenAndSendEmail(user, UserToken.UserTokenType.ACTIVATION);
         return user;
     }
     public  AuthTokenResponse login(LoginAuthRequest authRequest) {
-
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password()));
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return generateTokenPair(Objects.requireNonNull(userDetails));

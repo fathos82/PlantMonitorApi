@@ -1,7 +1,11 @@
 package io.athos.agrocore.plantmonitor.configuration;
 
+import io.athos.agrocore.plantmonitor.security.JwtAuthenticationFilter;
+import io.athos.agrocore.plantmonitor.security.SecurityUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -10,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,8 +26,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-//    @Autowired
+    @Autowired
+    @Lazy
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+//    @Autowired
+//    private SecurityUserDetailsService userDetailsService;
 
 
 
@@ -47,6 +56,8 @@ public class SecurityConfig {
                                         "/api/auth/confirm-delete-account/**"
                                 ).permitAll()
                                 .anyRequest().authenticated()
+                                .requestMatchers(HttpMethod.POST,"/api/devices/").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/sensors/").permitAll()
                 )
 
                 // Define a política de sessão como stateless
@@ -69,13 +80,13 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-
+//
 //    @Bean
 //    public UserDetailsService userDetailsService() {
 //        return userDetailsService;
 //    }
-//    @Bean
-//    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-//        return new JwtAuthenticationFilter();
-//    }
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
 }

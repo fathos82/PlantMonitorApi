@@ -55,8 +55,8 @@ public class SensorService {
     public void deleteSensor(Long sensorId, SecurityUser authenticatedUser) {
         virtualSensorRepository.deleteById_AndDevice_User_Id(sensorId, authenticatedUser.getPersistentUser().getId());
     }
-    public  List<VirtualSensor> listSensorByDeviceUuid(String deviceUuId, SecurityUser authenticatedUser) {
-        return virtualSensorRepository.findAllByDevice_DeviceUuid_AndDevice_User_Id(deviceUuId, authenticatedUser.getPersistentUser().getId());
+    public  List<VirtualSensor> listSensorByDeviceUuid(String deviceUuId) {
+        return virtualSensorRepository.findAllByDevice_DeviceUuid(deviceUuId);
 
     }
 

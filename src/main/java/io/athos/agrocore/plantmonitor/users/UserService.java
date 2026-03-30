@@ -14,12 +14,13 @@ public class UserService {
     private UserRepository userRepository;
 
 
-    public User createUser(RegisterAuthRequest request) {
+    public User createUser(RegisterAuthRequest request, String password) {
         User user = new User();
         user.setName(request.name());
         user.setEmail(request.email());
+        user.setPassword(password);
+
         user.setPhone(request.phone());
-        user.setPassword(request.password()); // todo: encrypt this
         return userRepository.save(user);
     }
 
