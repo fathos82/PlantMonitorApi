@@ -21,7 +21,7 @@ public class MeasurementValueProtoRepository {
 
     private static final String BASE_QUERY = """
         SELECT mv.timestamp, mv.value
-        FROM zmeasurement_value mv
+        FROM measurement_value mv
         WHERE mv.measurement_parent_id = :id
           AND mv.timestamp >= ?
           AND mv.timestamp <= ?
