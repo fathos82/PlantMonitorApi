@@ -6,6 +6,7 @@ import io.athos.agrocore.plantmonitor.devices.sensors.dtos.RegisterSensorRequest
 import io.athos.agrocore.plantmonitor.devices.sensors.dtos.UpdateSensorRequest;
 import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +53,7 @@ public class SensorService {
         return virtualSensorRepository.save(virtualSensor);
     }
 
+    @Transactional
     public void deleteSensor(Long sensorId, SecurityUser authenticatedUser) {
         virtualSensorRepository.deleteById_AndDevice_User_Id(sensorId, authenticatedUser.getPersistentUser().getId());
     }
