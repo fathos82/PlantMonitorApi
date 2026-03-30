@@ -52,7 +52,7 @@ public class DeviceController {
         return ResponseEntity.ok(new DeviceResponse(device));
     }
 
-    @GetMapping("/by-uuid/{uuid}/")
+    @GetMapping("/from_device/{uuid}/")
     public ResponseEntity<DeviceResponse> findDeviceByUuId(@PathVariable String uuid,  @AuthenticationPrincipal SecurityUser authenticatedUser){
         Device  device = deviceService.getDeviceByUUID(uuid);
         return ResponseEntity.ok(new DeviceResponse(device));
