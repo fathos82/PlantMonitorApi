@@ -1,65 +1,99 @@
+---
+
+## TODO: Implementar downsampling / agregação de dados
+
+Reduzir a quantidade de pontos transmitidos agrupando registros em janelas de
+tempo, enviando valores consolidados em vez de cada leitura individual.
+
+**Tags:** `performance` `backend` `data`
+
+### Checklist
+
+- [ ] Definir granularidades suportadas (por minuto, por cinco minutos, etc.)
+- [ ] Implementar agrupamento por janela de tempo na query
+- [ ] Expor métricas de média, mínimo, máximo e mediana por intervalo
+- [ ] Validar redução de volume no tráfego e memória
+- [ ] Testar visualização no frontend com dados agregados
 
 ---
 
-## 1. Downsampling / Agregação
+## TODO: Implementar streaming em batch / chunking interno
 
-### Definição
-Consiste em reduzir a quantidade de pontos transmitidos, preservando apenas informações representativas do intervalo analisado.
+Enviar os dados em blocos menores e contínuos, permitindo que o frontend
+consuma e processe os registros à medida que chegam, sem aguardar a
+conclusão completa da consulta.
 
-### Funcionamento
-O backend agrupa os registros em janelas de tempo, como por minuto ou por cinco minutos, e envia valores consolidados em vez de cada leitura individual. As métricas mais utilizadas são média, mínimo, máximo e mediana.
+**Tags:** `performance` `backend` `streaming`
 
-### Benefícios
-- Reduz significativamente o volume de dados trafegado.
-- Diminui o uso de memória no backend e no frontend.
-- Mantém uma visão adequada para análise histórica e visualização em gráficos.
-- Melhora o tempo de resposta em consultas de longo período.
+### Checklist
 
-### Exemplo conceitual
-| Intervalo | Valor agregado |
-|----------|----------------|
-| 12:00:00 | 27,1           |
-| 12:01:00 | 26,8           |
-| 12:02:00 | 27,3           |
+- [ ] Definir tamanho do lote (ex: 5.000 registros por vez)
+- [ ] Implementar leitura paginada do banco com scroll ou offset
+- [ ] Transmitir cada lote via resposta HTTP progressiva
+- [ ] Garantir que o frontend processe os lotes incrementalmente
+- [ ] Validar comportamento em consultas de longo período
 
 ---
 
-## 2. Streaming em batch / Chunking interno
+## TODO: Migrar repositório para JdbcTemplate + Protobuf
 
-### Definição
-Consiste em enviar os dados em blocos menores e contínuos, em vez de carregar todo o conjunto de uma única vez.
+Remover overhead do JPA nas queries de alta frequência. Usar `JdbcTemplate`
+com mapeamento direto para o builder do Protobuf, eliminando DTOs intermediários.
 
-### Funcionamento
-O backend lê os registros do banco em lotes, processa cada lote e os envia progressivamente pela resposta HTTP. Dessa forma, o frontend pode consumir e processar os dados à medida que eles chegam, sem aguardar o término completo da consulta.
+**Tags:** `performance` `refactor` `jdbc` `protobuf`
 
-### Benefícios
-- Evita consumo excessivo de memória.
-- Reduz o risco de timeout em consultas volumosas.
-- Permite processamento incremental no frontend.
-- Mantém o conjunto completo de dados, sem fragmentar a consulta em múltiplas requisições manuais.
+### Checklist
 
-### Exemplo conceitual
-- O backend busca 5.000 registros por vez.
-- Cada lote é convertido e enviado imediatamente.
-- O frontend recebe os lotes em sequência e atualiza a visualização progressivamente.
+- [ ] Adicionar dependência `spring-boot-starter-jdbc`
+- [ ] Criar classe `*ProtoRepository` com `JdbcTemplate`
+- [ ] Mapear `ResultSet` diretamente no builder Protobuf
+- [ ] Remover entidades JPA das queries de alta frequência
+- [ ] Benchmark antes e depois com JMH ou similar
 
 ---
 
-## Consideração final
+## TODO: Criar rota de listagem de sensores por usuário
 
-A escolha entre as duas abordagens depende do objetivo da aplicação:
+Expor endpoint que retorna apenas os sensores associados ao usuário autenticado,
+respeitando o isolamento de dados por conta.
 
-- Use **downsampling/agregação** quando o objetivo for reduzir volume e manter apenas a informação essencial.
-- Use **streaming em batch** quando for necessário preservar o conjunto completo de dados, mas com maior controle sobre memória e latência.
+**Tags:** `feature` `api` `sensor`
 
-## TODO
-### Criar Rota de Listagem de Sensores para os usuarios
+### Checklist
 
-## TODO
-### Revisar restrição de entidades do usuario autenticado
+- [ ] Criar endpoint `GET /api/sensors`
+- [ ] Filtrar sensores pelo usuário autenticado no `SecurityContext`
+- [ ] Mapear resposta para DTO ou Protobuf adequado
+- [ ] Cobrir com testes de integração
 
-## TODO
-### Revisar restrição de entidades do usuario autenticado
+---
 
-## TODO
-### Revisar associação de usuário device.
+## TODO: Revisar restrição de entidades do usuário autenticado
+
+Garantir que nenhum endpoint permita acesso a entidades de outros usuários,
+validando o vínculo entre o recurso solicitado e o usuário do token.
+
+**Tags:** `security` `authorization`
+
+### Checklist
+
+- [ ] Auditar endpoints existentes quanto ao isolamento por usuário
+- [ ] Adicionar verificação de ownership nas queries críticas
+- [ ] Retornar `403 Forbidden` em tentativas de acesso indevido
+- [ ] Cobrir cenários com testes de segurança
+
+---
+
+## TODO: Revisar associação de usuário com device
+
+Validar e corrigir o mapeamento entre usuários e devices, garantindo que a
+relação esteja corretamente modelada e persistida.
+
+**Tags:** `refactor` `data-model` `device`
+
+### Checklist
+
+- [ ] Revisar a entidade `Device` e seu relacionamento com `User`
+- [ ] Verificar se a FK está sendo populada corretamente no cadastro
+- [ ] Garantir que queries de device filtrem pelo usuário dono
+- [ ] Validar comportamento ao deletar usuário (cascade ou bloqueio)
