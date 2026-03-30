@@ -7,6 +7,7 @@ import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoringService;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -20,7 +21,8 @@ public class MeasurementService {
     private MeasurementRepository measurementRepository;
     @Autowired
     private PlantMonitoringService plantMonitoringService;
-
+    @Autowired
+    private MeasurementValueProtoRepository measurementValueProtoRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -48,7 +50,6 @@ public class MeasurementService {
         Measurement measurement = measurementRepository.findByVirtualSensorIdAndMeasurementType(sensorId, capability).orElseThrow(() -> new NotFoundException("measurement", "capability", capability.toString()));
         long baseTimestamp = batch.getBaseTimestamp();
         for (Proto.SensorReading sensorReading : batch.getReadingsList()) {
-            System.out.println(sensorReading.toString());
             long timestampRealMs = baseTimestamp + sensorReading.getDeltaMs();
             MeasurementValue measurementValue = new MeasurementValue(measurement,Instant.ofEpochMilli(timestampRealMs), Math.round(sensorReading.getValue() * 100.0) / 100.0);
             measurementValues.add(measurementValue);
@@ -120,6 +121,18 @@ public class MeasurementService {
         return response;
     }
 
+    public Proto.SensorReadingsResponse listMeasurementByParentWithNewProtoBuffer(Long measurementId, Instant start, Instant end, Integer limit) {
+        long startTime = System.nanoTime();
+        System.out.printf("[SERVICE][PROTO] measurementId=%d, start=%s, end=%s, limit=%d%n", measurementId, start, end, limit);
+        Proto.SensorReadingsResponse response = measurementValueProtoRepository.findAsProto(measurementId, start, end, limit);
+        long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+        System.out.printf("[SERVICE][PROTO] Number of readings=%d, Duration=%dms%n",
+                response.getReadingsCount(), durationMs);
+
+        return response;
+
+    }
+
     public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBufferParallel(
             Long measurementId, Instant start, Instant end, Integer limit) {
 
@@ -151,6 +164,7 @@ public class MeasurementService {
             Long measurementId, Instant start, Instant end, Integer limit) {
         return measurementValueRepository.findRaw(measurementId, start, end, limit);
     }
+
 
 
 }

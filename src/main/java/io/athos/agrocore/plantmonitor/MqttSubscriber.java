@@ -65,6 +65,7 @@ public class MqttSubscriber {
                 System.err.println("Ignorando payload inválido no tópico " + topic + ". Não é um Protobuf válido.");
             }
             catch (NotFoundException ignore){
+
             }
             catch (Exception e) {
                 System.err.println("Erro ao processar leitura: " + e.getMessage());
