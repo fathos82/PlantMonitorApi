@@ -24,7 +24,7 @@ public class PlantMonitoring {
 
     @Column(nullable = false)
     private String specieName;
-    @OneToMany(cascade = CascadeType.DETACH, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Measurement> measurements;
 
 
