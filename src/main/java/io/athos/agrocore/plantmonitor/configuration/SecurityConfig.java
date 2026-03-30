@@ -53,11 +53,11 @@ public class SecurityConfig {
                                         "/api/auth/resend-email/**",
                                         "/api/auth/forgot-password/**",
                                         "/api/auth/reset-password/**",
-                                        "/api/auth/confirm-delete-account/**"
-                                ).permitAll()
-                                .anyRequest().authenticated()
+                                        "/api/auth/confirm-delete-account/**").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/devices/").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/sensors/").permitAll()
+                                .anyRequest().authenticated()
+
                 )
 
                 // Define a política de sessão como stateless
