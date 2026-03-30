@@ -97,3 +97,6 @@ relação esteja corretamente modelada e persistida.
 - [ ] Verificar se a FK está sendo populada corretamente no cadastro
 - [ ] Garantir que queries de device filtrem pelo usuário dono
 - [ ] Validar comportamento ao deletar usuário (cascade ou bloqueio)
+
+
+## TODO: VALIDAR COMPRESSAO DO SPRING

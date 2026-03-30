@@ -20,14 +20,14 @@ public class MeasurementValueProtoRepository {
     private static final int TARGET_POINTS = 1000;
 
     private static final String BASE_QUERY = """
-        SELECT mv.timestamp, mv.value
-        FROM measurement_value mv
-        WHERE mv.measurement_parent_id = :id
-          AND mv.timestamp >= ?
-          AND mv.timestamp <= ?
-        ORDER BY mv.timestamp DESC
-        LIMIT ?
-        """;
+    SELECT mv.timestamp, mv.value
+    FROM measurement_value mv
+    WHERE mv.measurement_parent_id = ?
+      AND mv.timestamp >= ?
+      AND mv.timestamp <= ?
+    ORDER BY mv.timestamp DESC
+    LIMIT ?
+    """;
 
     private static final String ADAPTIVE_QUERY = """
         SELECT time_bucket(CAST(? AS INTERVAL), mv.timestamp) AS bucket,
