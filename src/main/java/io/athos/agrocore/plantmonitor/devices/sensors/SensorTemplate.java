@@ -34,4 +34,10 @@ public class SensorTemplate {
     private Map<String, String> defaultParameters = new HashMap<>();
     private String model;
 
+    public String getName() {
+        if (name == null){
+            return "";
+        }
+        return name;
+    }
 }

@@ -40,8 +40,12 @@ public class DeviceService {
         return deviceRepository.getDeviceById(deviceId).orElseThrow(() -> new NotFoundException(Device.class, deviceId));
     }
     public Device getDeviceByUUID(String uuid, SecurityUser authenticatedUser) {
-        return deviceRepository.getDeviceByDeviceUuid_AndUser_Id(uuid, authenticatedUser.getPersistentUser().getId()).orElseThrow(() -> new NotFoundException(Device.class, "uuid", uuid));
+        // TODO: FIX THIS; HIGH PRIORITY
+        //         return deviceRepository.getDeviceByDeviceUuid_AndUser_Id(uuid, authenticatedUser.getPersistentUser().getId()).orElseThrow(() -> new NotFoundException(Device.class, "uuid", uuid));
+//        return deviceRepository.getDeviceByDeviceUuid_AndUser_Id(uuid, authenticatedUser.getPersistentUser().getId()).orElseThrow(() -> new NotFoundException(Device.class, "uuid", uuid));
+        return deviceRepository.getDeviceByDeviceUuid(uuid).orElseThrow(() -> new NotFoundException(Device.class, "uuid", uuid));
     }
+
 
     public void deleteDeviceByIdFromAuthenticatedUser(Long deviceId, SecurityUser authenticatedUser) {
         Device device = getDeviceByIdFromAuthenticatedUser(deviceId, authenticatedUser);
