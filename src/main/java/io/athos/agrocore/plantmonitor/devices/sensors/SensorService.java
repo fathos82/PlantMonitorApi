@@ -7,11 +7,13 @@ import io.athos.agrocore.plantmonitor.devices.sensors.dtos.UpdateSensorRequest;
 import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static io.athos.agrocore.plantmonitor.devices.sensors.SensorNotify.NotifyType.SENSOR_ERROR;
@@ -93,5 +95,9 @@ public class SensorService {
 
     public List<SensorTemplate> listTemplates() {
         return sensorTemplateRepository.findAll();
+    }
+
+    public List<VirtualSensor> listSensorByDeviceId(@Valid Long deviceId, SecurityUser authenticatedUser) {
+        return virtualSensorRepository.findAllByDevice_IdAndDevice_User_Id(deviceId, authenticatedUser.getPersistentUser().getId());
     }
 }

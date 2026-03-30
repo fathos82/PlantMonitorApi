@@ -67,7 +67,15 @@ public class SensorController {
     }
 
     // TODO: Depois trocar essa url
+
+    // TODO: List All By Default
     @GetMapping
+    public ResponseEntity<List<SensorResponse>> listAllByDeviceId(@Valid @RequestParam Long deviceId, @AuthenticationPrincipal SecurityUser authenticatedUser){
+        return ResponseEntity.ok(sensorService.listSensorByDeviceId(deviceId, authenticatedUser).stream().map(SensorResponse::new).toList());
+    }
+
+    // TODO: depois repensar nessa rota.
+    @GetMapping("from_device")
     public ResponseEntity<List<SensorResponse>> listSensorByDeviceUuid(@Valid @RequestParam String deviceUid){
         return ResponseEntity.ok(sensorService.listSensorByDeviceUuid(deviceUid).stream().map(SensorResponse::new).toList());
     }

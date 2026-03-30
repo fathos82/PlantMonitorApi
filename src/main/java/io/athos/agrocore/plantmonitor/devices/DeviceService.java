@@ -3,16 +3,19 @@ package io.athos.agrocore.plantmonitor.devices;
 
 import io.athos.agrocore.plantmonitor.devices.dtos.SetUserToDeviceRequest;
 import io.athos.agrocore.plantmonitor.devices.dtos.UpdateDeviceRequest;
+import io.athos.agrocore.plantmonitor.errors.DetailErrorException;
 import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.devices.dtos.CreateDeviceRequest;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static io.athos.agrocore.plantmonitor.Utils.saveIfNotNull;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Service
 public class DeviceService {
@@ -75,6 +78,9 @@ public class DeviceService {
 
     public Device setUserToDevice(SecurityUser authenticatedUser, @Valid SetUserToDeviceRequest request) {
         Device device = getDeviceByUUID(request.deviceUuid());
+        if (device.getUser() != null){
+            throw new DetailErrorException("O device já pertence a outro usuário.", UNAUTHORIZED);
+        }
         device.setUser(authenticatedUser.getPersistentUser());
         deviceRepository.save(device);
         return device;

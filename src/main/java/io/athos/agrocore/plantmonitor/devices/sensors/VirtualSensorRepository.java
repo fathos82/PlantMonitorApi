@@ -1,5 +1,6 @@
 package io.athos.agrocore.plantmonitor.devices.sensors;
 
+import jakarta.validation.Valid;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,6 @@ public interface VirtualSensorRepository extends JpaRepository<VirtualSensor, Lo
     List<VirtualSensor> findAllByDevice_DeviceUuid_AndDevice_User_Id(String deviceDeviceUuid, Long deviceUserId);
 
     void deleteById_AndDevice_User_Id(Long id, Long deviceUserId);
+
+    List<VirtualSensor> findAllByDevice_IdAndDevice_User_Id(Long deviceId, Long id);
 }

@@ -36,6 +36,8 @@ public class Device {
     @LastModifiedDate
     private LocalDateTime lastSeenAt;
 
+
+    // TODO: FIX THE ONLINE VERIFICATION
     @Transient
     public boolean isOnline() {
         return lastSeenAt != null &&
