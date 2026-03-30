@@ -1,6 +1,5 @@
 package io.athos.agrocore.plantmonitor.monitorings.measurement;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.athos.agrocore.plantmonitor.devices.sensors.VirtualSensor;
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoring;
 import jakarta.persistence.*;
@@ -62,8 +61,7 @@ public class Measurement {
     private PlantMonitoring plantMonitoring;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "measurementParent", orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    @OrderBy("timestamp ASC")
+    @JsonIgnore
     private List<MeasurementValue> values = new ArrayList<>();
     @LastModifiedDate
     private LocalDateTime updatedAt;

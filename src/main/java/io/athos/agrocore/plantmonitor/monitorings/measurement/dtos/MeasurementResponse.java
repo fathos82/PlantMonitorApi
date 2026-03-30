@@ -13,12 +13,9 @@ public record MeasurementResponse(
         MeasurementType measurementType,
 
         Long plantMonitoringId,
-
-        List<MeasurementValue> values,
-
         LocalDateTime updatedAt
 ) {
     public MeasurementResponse(Measurement measurement) {
-        this(measurement.getId(), measurement.getVirtualSensor().getId(), measurement.getMeasurementType(), measurement.getPlantMonitoring().getId(), measurement.getValues(), measurement.getUpdatedAt());
+        this(measurement.getId(), measurement.getVirtualSensor().getId(), measurement.getMeasurementType(), measurement.getPlantMonitoring().getId(), measurement.getUpdatedAt());
     }
 }
