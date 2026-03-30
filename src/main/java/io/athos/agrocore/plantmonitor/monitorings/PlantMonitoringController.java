@@ -39,7 +39,7 @@ public class  PlantMonitoringController {
         return ResponseEntity.ok(new PlantMonitoringResponse(plantMonitoringService.findById(plantMonitoringId, authenticatedUser)));
     }
 
-    @GetMapping("{plantMonitoringId}/")
+    @GetMapping()
     public ResponseEntity<List<PlantMonitoringResponse>> findAllPlantMonitoring(@AuthenticationPrincipal SecurityUser authenticatedUser){
         return ResponseEntity.ok(plantMonitoringService.findAll(authenticatedUser)
                 .stream().map(PlantMonitoringResponse::new)
