@@ -55,7 +55,7 @@ public class SecurityConfig {
                                         "/api/auth/reset-password/**",
                                         "/api/auth/confirm-delete-account/**").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/devices/").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/api/devices/from_device/").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/devices/from_device/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/sensors/").permitAll()
                                 .anyRequest().authenticated()
 
