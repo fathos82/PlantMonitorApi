@@ -6,7 +6,9 @@ import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoringService;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
+import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.MeasurementResponse;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -31,7 +33,7 @@ public class MeasurementService {
 
 // TODO:   server.compression.enabled=true
 
-    public void createMeasurement(AddMeasurementRequest request, SecurityUser authenticatedUser){
+    public Measurement createMeasurement(AddMeasurementRequest request, SecurityUser authenticatedUser){
         Measurement  measurement = new Measurement();
 
         /// todo: verificar se o sensor de capacidade de monitorar essa medida
@@ -39,7 +41,7 @@ public class MeasurementService {
         measurement.setPlantMonitoring(plantMonitoringService.findPlantMonitoringById(request.plantId(), authenticatedUser));
         measurement.setVirtualSensor(sensorService.getSensorByIdAndAuthenticatedUser(request.sensorId(), authenticatedUser));
         measurementRepository.save(measurement);
-//        return measurement;
+        return measurement;
     }
 
 
@@ -74,6 +76,10 @@ public class MeasurementService {
     public void deleteMeasurement(Long measurementId, SecurityUser authenticatedUser) {
         Measurement measurement = getByIdAndAuthenticatedUser(measurementId, authenticatedUser);
         measurementRepository.delete(measurement);
+    }
+
+    public  List<Measurement> listAllMeasurementFromUser(SecurityUser authenticatedUser) {
+        return measurementRepository.findAllByPlantMonitoring_User_Id(authenticatedUser.getPersistentUser().getId());
     }
 
     public List<MeasurementValueView> listMeasurementByParentWithView(Long measurementId, Instant start, Instant end, int limit) {
@@ -146,4 +152,6 @@ public class MeasurementService {
             Long measurementId, Instant start, Instant end, Integer limit) {
         return measurementValueRepository.findRaw(measurementId, start, end, limit);
     }
+
+
 }

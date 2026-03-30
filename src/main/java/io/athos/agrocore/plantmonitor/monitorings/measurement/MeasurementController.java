@@ -21,9 +21,9 @@ public class MeasurementController {
     MeasurementService measurementService;
 
     @PostMapping // todo: maybe add type (ex: temperature)
-    public ResponseEntity<Void> addMeasurement(@Valid @RequestBody AddMeasurementRequest request, @AuthenticationPrincipal SecurityUser authenticatedUser){
-        measurementService.createMeasurement(request, authenticatedUser);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<MeasurementResponse> addMeasurement(@Valid @RequestBody AddMeasurementRequest request, @AuthenticationPrincipal SecurityUser authenticatedUser){
+
+        return ResponseEntity.ok(new MeasurementResponse(measurementService.createMeasurement(request, authenticatedUser)));
     }
 
 
@@ -37,6 +37,18 @@ public class MeasurementController {
         measurementService.deleteMeasurement(measurementId,authenticatedUser);
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping()
+    public ResponseEntity<List<MeasurementResponse>> listAllMeasurement(@AuthenticationPrincipal SecurityUser authenticatedUser){
+        return ResponseEntity.ok(measurementService.listAllMeasurementFromUser(authenticatedUser)
+                .stream()
+                .map(MeasurementResponse::new)
+                .toList());
+    }
+
+
+
 
     @GetMapping("{measurementId}/history/view/")
     public ResponseEntity<List<MeasurementValueView>> listMeasurementByParentWithView(

@@ -1,4 +1,6 @@
 package io.athos.agrocore.plantmonitor.monitorings.measurement;
+import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.MeasurementResponse;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -70,4 +72,6 @@ public interface MeasurementRepository extends JpaRepository<Measurement, Long> 
 
     @Override
     void delete(Measurement entity);
+
+    List<Measurement> findAllByPlantMonitoring_User_Id(Long id);
 }
