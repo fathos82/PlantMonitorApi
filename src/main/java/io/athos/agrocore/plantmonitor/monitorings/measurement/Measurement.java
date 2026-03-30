@@ -49,7 +49,7 @@ public class Measurement {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "virtual_sensor_id", nullable = false)
+    @JoinColumn(name = "virtual_sensor_id")
     private VirtualSensor virtualSensor;
 
     @Enumerated(EnumType.STRING)
