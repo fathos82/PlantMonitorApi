@@ -52,6 +52,12 @@ public class DeviceController {
         return ResponseEntity.ok(new DeviceResponse(device));
     }
 
+    @GetMapping("/by-uuid/{uuid}/")
+    public ResponseEntity<DeviceResponse> findDeviceByUuId(@PathVariable String uuid,  @AuthenticationPrincipal SecurityUser authenticatedUser){
+        Device  device = deviceService.getDeviceByUUID(uuid);
+        return ResponseEntity.ok(new DeviceResponse(device));
+    }
+
     @GetMapping("{userId}/")
     public ResponseEntity<List<DeviceResponse>> findDevicesFromAuthenticatedUser(@AuthenticationPrincipal SecurityUser authenticatedUser) {
         return ResponseEntity.ok(deviceService.findDevicesByAuthenticatedUser(authenticatedUser)
