@@ -56,11 +56,28 @@ public class AuthService {
         return generateTokenPair(Objects.requireNonNull(userDetails));
     }
 
-    public  AuthTokenResponse refreshToken(String refreshToken) {
-        return new AuthTokenResponse(null, null, "Bearer");
+    public AuthTokenResponse refreshToken(String refreshToken) {
+        if (jwtService.isAccessToken(refreshToken)) {
+            throw new InvalidInputRefreshToken();
+        }
+        String username = jwtService.extractUsername(refreshToken);
+        String jti = jwtService.extractJti(refreshToken);
+        RefreshToken refreshTokenEntity = getRefreshTokenByJti(jti);
+        if (refreshTokenEntity.isBlacklisted() || jwtService.isTokenExpired(refreshToken)) {
+            throw new InvalidRefreshTokenException("Refresh token invalid or expired. Please make login again.");
+        }
 
+        refreshTokenEntity.setBlacklisted(true);
+        refreshTokenRepository.save(refreshTokenEntity);
+        String newRefreshToken = jwtService.generateRefreshToken(username);
+        RefreshToken newTokenEntity = new RefreshToken();
+        newTokenEntity.setJti(jwtService.extractJti(newRefreshToken));
+        newTokenEntity.setUsername(username);
+        newTokenEntity.setExpiryDate(jwtService.extractExpirationDate(newRefreshToken));
+        newTokenEntity.setBlacklisted(false);
+        refreshTokenRepository.save(newTokenEntity);
+        return new AuthTokenResponse(jwtService.generateAccessToken(username), newRefreshToken, "bearer");
     }
-
     void logout(String refreshToken) {
         if (jwtService.isAccessToken(refreshToken)) {
             throw new InvalidInputRefreshToken();
