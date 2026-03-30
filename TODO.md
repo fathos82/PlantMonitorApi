@@ -51,3 +51,15 @@ A escolha entre as duas abordagens depende do objetivo da aplicação:
 
 - Use **downsampling/agregação** quando o objetivo for reduzir volume e manter apenas a informação essencial.
 - Use **streaming em batch** quando for necessário preservar o conjunto completo de dados, mas com maior controle sobre memória e latência.
+
+## TODO
+### Criar Rota de Listagem de Sensores para os usuarios
+
+## TODO
+### Revisar restrição de entidades do usuario autenticado
+
+## TODO
+### Revisar restrição de entidades do usuario autenticado
+
+## TODO
+### Revisar associação de usuário device.

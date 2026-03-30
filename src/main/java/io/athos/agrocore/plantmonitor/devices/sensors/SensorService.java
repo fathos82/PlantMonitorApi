@@ -39,7 +39,7 @@ public class SensorService {
 
 
     public VirtualSensor createSensor(RegisterSensorRequest request, SecurityUser authenticatedUser) {
-        Device device = deviceService.getDeviceByUUID(request.deviceUid(), authenticatedUser);
+        Device device = deviceService.getDeviceByIdFromAuthenticatedUser(request.deviceUid(), authenticatedUser);
         SensorTemplate sensorTemplate = sensorTemplateRepository.findById(request.sensorTemplateId())
                 .orElseThrow(() -> new  NotFoundException(SensorTemplate.class, request.sensorTemplateId()));
         VirtualSensor sensor = new VirtualSensor(sensorTemplate, device, request.parameters());

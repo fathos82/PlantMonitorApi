@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public record RegisterSensorRequest(
-        String deviceUid, // todo: change to the normal ID
+        Long deviceId, // todo: change to the normal ID
 
         Map<String, String>parameters,
         @NotNull

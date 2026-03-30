@@ -2,6 +2,7 @@ package io.athos.agrocore.plantmonitor.devices;
 
 import io.athos.agrocore.plantmonitor.devices.dtos.CreateDeviceRequest;
 import io.athos.agrocore.plantmonitor.devices.dtos.DeviceResponse;
+import io.athos.agrocore.plantmonitor.devices.dtos.SetUserToDeviceRequest;
 import io.athos.agrocore.plantmonitor.devices.dtos.UpdateDeviceRequest;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import jakarta.validation.Valid;
@@ -22,6 +23,13 @@ public class DeviceController {
     @PostMapping
     public ResponseEntity<DeviceResponse> registerDevice(@Valid @RequestBody CreateDeviceRequest request){
         Device  device = deviceService.createDevice(request);
+        return ResponseEntity.ok(new DeviceResponse(device));
+    }
+
+    // TODO: REMOVE THIS
+    @PostMapping("/me/")
+    public ResponseEntity<DeviceResponse> setUserToDevice(@Valid @RequestBody SetUserToDeviceRequest request, @AuthenticationPrincipal SecurityUser authenticatedUser){
+        Device  device = deviceService.setUserToDevice(authenticatedUser, request);
         return ResponseEntity.ok(new DeviceResponse(device));
     }
 

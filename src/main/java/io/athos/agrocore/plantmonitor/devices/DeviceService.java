@@ -1,10 +1,12 @@
 package io.athos.agrocore.plantmonitor.devices;
 
 
+import io.athos.agrocore.plantmonitor.devices.dtos.SetUserToDeviceRequest;
 import io.athos.agrocore.plantmonitor.devices.dtos.UpdateDeviceRequest;
 import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.devices.dtos.CreateDeviceRequest;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +41,11 @@ public class DeviceService {
     private Device getDeviceById(Long deviceId) {
         return deviceRepository.getDeviceById(deviceId).orElseThrow(() -> new NotFoundException(Device.class, deviceId));
     }
-    public Device getDeviceByUUID(String uuid, SecurityUser authenticatedUser) {
+    public Device getDeviceByUUID(String uuid) {
+        return deviceRepository.getDeviceByDeviceUuid(uuid).orElseThrow(() -> new NotFoundException(Device.class, "uuid", uuid));
+    }
+
+    public Device getDeviceByUUIDFromAuthenticatedUser(String uuid, SecurityUser authenticatedUser) {
         // TODO: FIX THIS; HIGH PRIORITY
         //         return deviceRepository.getDeviceByDeviceUuid_AndUser_Id(uuid, authenticatedUser.getPersistentUser().getId()).orElseThrow(() -> new NotFoundException(Device.class, "uuid", uuid));
 //        return deviceRepository.getDeviceByDeviceUuid_AndUser_Id(uuid, authenticatedUser.getPersistentUser().getId()).orElseThrow(() -> new NotFoundException(Device.class, "uuid", uuid));
@@ -67,4 +73,10 @@ public class DeviceService {
     }
 
 
+    public Device setUserToDevice(SecurityUser authenticatedUser, @Valid SetUserToDeviceRequest request) {
+        Device device = getDeviceByUUID(request.deviceUuid());
+        device.setUser(authenticatedUser.getPersistentUser());
+        deviceRepository.save(device);
+        return device;
+    }
 }
