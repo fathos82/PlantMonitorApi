@@ -43,11 +43,12 @@ public class MeasurementService {
     }
 
 
-    public void saveAll(MeasurementType capability,Long sensorId, Proto.SensorReadingBatch batch) {
+    public void saveFromBatch(MeasurementType capability, Long sensorId, Proto.SensorReadingBatch batch) {
         List<MeasurementValue> measurementValues = new ArrayList<>();
         Measurement measurement = measurementRepository.findByVirtualSensorIdAndMeasurementType(sensorId, capability).orElseThrow(() -> new NotFoundException("measurement", "capability", capability.toString()));
         long baseTimestamp = batch.getBaseTimestamp();
         for (Proto.SensorReading sensorReading : batch.getReadingsList()) {
+            System.out.println(sensorReading.toString());
             long timestampRealMs = baseTimestamp + sensorReading.getDeltaMs();
             MeasurementValue measurementValue = new MeasurementValue(measurement,Instant.ofEpochMilli(timestampRealMs), Math.round(sensorReading.getValue() * 100.0) / 100.0);
             measurementValues.add(measurementValue);

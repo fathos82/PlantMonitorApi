@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 // IMPORTANTE: Importe a classe que o compilador do Protobuf gerou para você
-import io.athos.agrocore.plantmonitor.devices.sensors.Proto.SensorReading;
 import io.athos.agrocore.plantmonitor.devices.sensors.Proto.SensorReadingBatch;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -58,7 +57,7 @@ public class MqttSubscriber {
 
                 // Desempacota os bytes diretamente para o Objeto Java gerado pelo .proto
                 SensorReadingBatch batch = SensorReadingBatch.parseFrom(payloadBinario);
-                measurementService.saveAll(measurementType,sensorId,batch);
+                measurementService.saveFromBatch(measurementType,sensorId,batch);
 
 
             } catch (InvalidProtocolBufferException e) {
