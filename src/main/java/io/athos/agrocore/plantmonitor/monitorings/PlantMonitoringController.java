@@ -1,6 +1,5 @@
 package io.athos.agrocore.plantmonitor.monitorings;
 
-import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.CreatePlantMonitoringRequest;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.PlantMonitoringResponse;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.UpdatePlantMonitoringRequest;
@@ -10,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/plants/") // todo: change this route
@@ -34,8 +35,16 @@ public class  PlantMonitoringController {
     }
 
     @GetMapping("{plantMonitoringId}/")
-    public ResponseEntity<PlantMonitoringResponse> findPlantMonitoringById(@PathVariable Long plantMonitoringId, @AuthenticationPrincipal SecurityUser authenticatedUser){
-        return ResponseEntity.ok(new PlantMonitoringResponse(plantMonitoringService.findPlantMonitoringById(plantMonitoringId, authenticatedUser)));
+    public ResponseEntity<PlantMonitoringResponse> findPlantMonitoringById(@PathVariable Long plantMonitoringId, @AuthenticationPrincipal SecurityUser authenticatedUser) {
+        return ResponseEntity.ok(new PlantMonitoringResponse(plantMonitoringService.findById(plantMonitoringId, authenticatedUser)));
+    }
+
+    @GetMapping("{plantMonitoringId}/")
+    public ResponseEntity<List<PlantMonitoringResponse>> findAllPlantMonitoring(@AuthenticationPrincipal SecurityUser authenticatedUser){
+        return ResponseEntity.ok(plantMonitoringService.findAll(authenticatedUser)
+                .stream().map(PlantMonitoringResponse::new)
+                .toList()
+        );
     }
 
 //    @PostMapping("{plantId}/measurement/") // todo: maybe add type (ex: temperature)

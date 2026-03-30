@@ -6,9 +6,7 @@ import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoringService;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
-import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.MeasurementResponse;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -38,7 +36,7 @@ public class MeasurementService {
 
         /// todo: verificar se o sensor de capacidade de monitorar essa medida
         measurement.setMeasurementType(request.measurementType());
-        measurement.setPlantMonitoring(plantMonitoringService.findPlantMonitoringById(request.plantId(), authenticatedUser));
+        measurement.setPlantMonitoring(plantMonitoringService.findById(request.plantId(), authenticatedUser));
         measurement.setVirtualSensor(sensorService.getSensorByIdAndAuthenticatedUser(request.sensorId(), authenticatedUser));
         measurementRepository.save(measurement);
         return measurement;

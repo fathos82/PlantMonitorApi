@@ -4,9 +4,10 @@ import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.CreatePlantMonitoringRequest;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.UpdatePlantMonitoringRequest;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
-import io.athos.agrocore.plantmonitor.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static io.athos.agrocore.plantmonitor.ObjectHelperUtils.setIfNotNull;
 
@@ -14,7 +15,7 @@ import static io.athos.agrocore.plantmonitor.ObjectHelperUtils.setIfNotNull;
 public class PlantMonitoringService {
     @Autowired
     private PlantMonitoringRepository plantMonitoringRepository;
-    public PlantMonitoring findPlantMonitoringById(Long id, SecurityUser authenticatedUser) {
+    public PlantMonitoring findById(Long id, SecurityUser authenticatedUser) {
         return plantMonitoringRepository.findById_AndUser_Id(id, authenticatedUser.getPersistentUser().getId()).orElseThrow(
                 () -> new NotFoundException(PlantMonitoring.class, id)
         );
@@ -30,7 +31,7 @@ public class PlantMonitoringService {
     }
 
     public PlantMonitoring updatePlantMonitoringId(Long plantMonitoringId, UpdatePlantMonitoringRequest request, SecurityUser authenticatedUser) {
-        PlantMonitoring plantMonitoring = findPlantMonitoringById(plantMonitoringId, authenticatedUser);
+        PlantMonitoring plantMonitoring = findById(plantMonitoringId, authenticatedUser);
         setIfNotNull(request.commonName(), plantMonitoring::setCommonName);
         setIfNotNull(request.specieName(), plantMonitoring::setSpecieName);
         return plantMonitoring;
@@ -38,5 +39,9 @@ public class PlantMonitoringService {
 
     public void deletePlantMonitoring(Long plantMonitoringId, SecurityUser authenticatedUser) {
         plantMonitoringRepository.deleteById_AndUser_Id(plantMonitoringId, authenticatedUser.getPersistentUser().getId());
+    }
+
+    public List<PlantMonitoring> findAll(SecurityUser authenticatedUser) {
+        return plantMonitoringRepository.findAllByUser_Id(authenticatedUser.getPersistentUser().getId());
     }
 }
