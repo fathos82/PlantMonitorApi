@@ -38,6 +38,7 @@ public class PlantMonitoringService {
         return plantMonitoring;
     }
 
+    @Transactional
     public void deletePlantMonitoring(Long plantMonitoringId, SecurityUser authenticatedUser) {
         plantMonitoringRepository.deleteById_AndUser_Id(plantMonitoringId, authenticatedUser.getPersistentUser().getId());
     }
