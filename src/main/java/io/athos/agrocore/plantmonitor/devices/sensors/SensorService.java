@@ -10,6 +10,7 @@ import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class SensorService {
     @Autowired
     private SensorTemplateRepository sensorTemplateRepository;
     @Autowired
+    @Lazy
     private MeasurementService measurementService;
 
     public VirtualSensor getSensorByIdAndAuthenticatedUser(Long sensorId, SecurityUser authenticatedUser) {
