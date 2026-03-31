@@ -43,6 +43,7 @@ public class MqttSubscriber {
 
             try {
                 // TODO: Add Device UuID
+                System.out.println(topic);
                 String[] parts = topic.split("/");
                 if (parts.length != 3) return;
 
