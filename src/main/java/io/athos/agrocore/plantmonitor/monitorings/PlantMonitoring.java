@@ -24,7 +24,7 @@ public class PlantMonitoring {
 
     @Column(nullable = false)
     private String specieName;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(    mappedBy = "plantMonitoring", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Measurement> measurements;
 
 
