@@ -49,6 +49,7 @@ public class MeasurementService {
         List<MeasurementValue> measurementValues = new ArrayList<>();
         Measurement measurement = measurementRepository.findByVirtualSensorIdAndMeasurementType(sensorId, capability).orElseThrow(() -> new NotFoundException("measurement", "capability", capability.toString()));
         long baseTimestamp = batch.getBaseTimestamp();
+        System.out.println(batch.toString());
         for (Proto.SensorReading sensorReading : batch.getReadingsList()) {
             long timestampRealMs = baseTimestamp + sensorReading.getDeltaMs();
             MeasurementValue measurementValue = new MeasurementValue(measurement,Instant.ofEpochMilli(timestampRealMs), Math.round(sensorReading.getValue() * 100.0) / 100.0);
