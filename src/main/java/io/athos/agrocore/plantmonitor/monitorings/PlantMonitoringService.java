@@ -4,6 +4,7 @@ import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.CreatePlantMonitoringRequest;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.UpdatePlantMonitoringRequest;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,7 @@ public class PlantMonitoringService {
         plantMonitoringRepository.deleteById_AndUser_Id(plantMonitoringId, authenticatedUser.getPersistentUser().getId());
     }
 
+    @Transactional
     public List<PlantMonitoring> findAll(SecurityUser authenticatedUser) {
         return plantMonitoringRepository.findAllByUser_Id(authenticatedUser.getPersistentUser().getId());
     }
