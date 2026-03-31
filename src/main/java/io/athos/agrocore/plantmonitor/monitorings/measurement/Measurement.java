@@ -61,7 +61,7 @@ public class Measurement {
     @JoinColumn(name = "plant_monitoring_id", nullable = false)
     private PlantMonitoring plantMonitoring;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "measurementParent", orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "measurementParent", orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<MeasurementValue> values = new ArrayList<>();
     @LastModifiedDate
