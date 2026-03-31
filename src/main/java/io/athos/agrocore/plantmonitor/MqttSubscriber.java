@@ -49,6 +49,8 @@ public class MqttSubscriber {
 //                String deviceUuid = parts[1];
                 Long sensorId = Long.parseLong(parts[1]);
                 String capability = parts[2];
+                System.out.println(sensorId);
+                System.out.println(capability);
                 MeasurementType measurementType = MeasurementType.fromString(capability);
 
 
@@ -57,6 +59,7 @@ public class MqttSubscriber {
 
                 // Desempacota os bytes diretamente para o Objeto Java gerado pelo .proto
                 SensorReadingBatch batch = SensorReadingBatch.parseFrom(payloadBinario);
+                System.out.println(SensorReadingBatch.getDefaultInstance().toByteString());
                 measurementService.saveFromBatch(measurementType,sensorId,batch);
 
 
