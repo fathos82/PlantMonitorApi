@@ -5,6 +5,7 @@ import io.athos.agrocore.plantmonitor.devices.DeviceService;
 import io.athos.agrocore.plantmonitor.devices.sensors.dtos.RegisterSensorRequest;
 import io.athos.agrocore.plantmonitor.devices.sensors.dtos.UpdateSensorRequest;
 import io.athos.agrocore.plantmonitor.errors.NotFoundException;
+import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementService;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -28,6 +29,8 @@ public class SensorService {
     private SensorNotifyRepository sensorNotifyRepository;
     @Autowired
     private SensorTemplateRepository sensorTemplateRepository;
+    @Autowired
+    private MeasurementService measurementService;
 
     public VirtualSensor getSensorByIdAndAuthenticatedUser(Long sensorId, SecurityUser authenticatedUser) {
         return virtualSensorRepository.findById_AndDevice_User_Id(sensorId, authenticatedUser.getPersistentUser().getId())
@@ -57,6 +60,7 @@ public class SensorService {
 
     @Transactional
     public void deleteSensor(Long sensorId, SecurityUser authenticatedUser) {
+        measurementService.detachSensorFromMeasurements(sensorId,authenticatedUser);
         virtualSensorRepository.deleteById_AndDevice_User_Id(sensorId, authenticatedUser.getPersistentUser().getId());
     }
     public  List<VirtualSensor> listSensorByDeviceUuid(String deviceUuId) {

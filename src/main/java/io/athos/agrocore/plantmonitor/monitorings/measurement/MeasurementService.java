@@ -166,5 +166,7 @@ public class MeasurementService {
     }
 
 
-
+    public void detachSensorFromMeasurements(Long sensorId, SecurityUser authenticatedUser) {
+        measurementRepository.detachSensorFromMeasurements(sensorId, authenticatedUser.getPersistentUser().getId());
+    }
 }
