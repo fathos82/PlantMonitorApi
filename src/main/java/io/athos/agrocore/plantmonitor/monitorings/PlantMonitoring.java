@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +28,10 @@ public class PlantMonitoring {
     @OneToMany(    mappedBy = "plantMonitoring", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Measurement> measurements;
 
-
-
+    public List<Measurement> getMeasurements() {
+        if  (this.measurements == null) {
+            this.measurements = new ArrayList<>();
+        }
+        return this.measurements;
+    }
 }
