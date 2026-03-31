@@ -50,7 +50,7 @@ public class Measurement {
 
     @ManyToOne(fetch = FetchType.LAZY)
     // TODO: Verificar como deve funcionar esse nullable true.
-    @JoinColumn(name = "virtual_sensor_id")
+    @JoinColumn(name = "virtual_sensor_id", nullable = true)
     private VirtualSensor virtualSensor;
 
     @Enumerated(EnumType.STRING)
