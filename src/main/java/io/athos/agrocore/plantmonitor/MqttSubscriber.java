@@ -46,9 +46,9 @@ public class MqttSubscriber {
                 String[] parts = topic.split("/");
                 if (parts.length != 4) return;
 
-                String deviceUuid = parts[1];
-                Long sensorId = Long.parseLong(parts[2]);
-                String capability = parts[3];
+//                String deviceUuid = parts[1];
+                Long sensorId = Long.parseLong(parts[1]);
+                String capability = parts[2];
                 MeasurementType measurementType = MeasurementType.fromString(capability);
 
 
