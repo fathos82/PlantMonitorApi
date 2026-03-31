@@ -22,11 +22,11 @@ public class VirtualSensor {
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private PlantMonitoring plantMonitoring;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private PlantMonitoring plantMonitoring;
     @ManyToOne
     private SensorTemplate sensorTemplate;
     @UpdateTimestamp
