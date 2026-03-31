@@ -44,7 +44,7 @@ public class MqttSubscriber {
             try {
 
                 String[] parts = topic.split("/");
-                if (parts.length != 4) return;
+                if (parts.length != 3) return;
 
 //                String deviceUuid = parts[1];
                 Long sensorId = Long.parseLong(parts[1]);
