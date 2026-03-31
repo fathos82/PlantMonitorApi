@@ -42,15 +42,13 @@ public class MqttSubscriber {
         client.subscribe("plant_monitor/#", (topic, msg) -> {
 
             try {
-
+                // TODO: Add Device UuID
                 String[] parts = topic.split("/");
                 if (parts.length != 3) return;
 
-//                String deviceUuid = parts[1];
                 Long sensorId = Long.parseLong(parts[1]);
                 String capability = parts[2];
-                System.out.println(sensorId);
-                System.out.println(capability);
+
                 MeasurementType measurementType = MeasurementType.fromString(capability);
 
 
