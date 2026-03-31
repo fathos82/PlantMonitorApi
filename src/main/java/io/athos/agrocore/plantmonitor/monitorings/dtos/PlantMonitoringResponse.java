@@ -2,6 +2,7 @@ package io.athos.agrocore.plantmonitor.monitorings.dtos;
 
 import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoring;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.Measurement;
+import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.MeasurementResponse;
 import io.athos.agrocore.plantmonitor.users.User;
 import jakarta.persistence.*;
 
@@ -12,7 +13,7 @@ public record PlantMonitoringResponse(
         Long userId,
         String commonName,
         String specieName,
-        List<Measurement> measurements // TODO: A Decidir se mantemos!
+        List<MeasurementResponse> measurements // TODO: A Decidir se mantemos!
 
 )
 {
@@ -22,7 +23,7 @@ public record PlantMonitoringResponse(
                 plantMonitoring.getUser().getId(),
                 plantMonitoring.getCommonName(),
                 plantMonitoring.getSpecieName(),
-                plantMonitoring.getMeasurements()
+                plantMonitoring.getMeasurements().stream().map(MeasurementResponse::new).toList()
         );
 
     }
