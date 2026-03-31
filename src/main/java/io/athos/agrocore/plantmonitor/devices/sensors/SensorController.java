@@ -75,7 +75,7 @@ public class SensorController {
     }
 
     // TODO: depois repensar nessa rota.
-    @GetMapping("from_device")
+    @GetMapping("from_device/")
     public ResponseEntity<List<SensorResponse>> listSensorByDeviceUuid(@Valid @RequestParam String deviceUid){
         return ResponseEntity.ok(sensorService.listSensorByDeviceUuid(deviceUid).stream().map(SensorResponse::new).toList());
     }
