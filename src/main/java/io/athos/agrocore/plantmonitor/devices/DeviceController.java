@@ -32,6 +32,13 @@ public class DeviceController {
         Device  device = deviceService.setUserToDevice(authenticatedUser, request);
         return ResponseEntity.ok(new DeviceResponse(device));
     }
+
+    @PostMapping("/{deviceId}/ping/")
+    public ResponseEntity<DeviceResponse> pingDevice(@PathVariable Long deviceId){
+        Device  device = deviceService.pingDevice(deviceId);
+        return ResponseEntity.ok(new DeviceResponse(device));
+    }
+
     @GetMapping("me/")
     public ResponseEntity<List<DeviceResponse>> findDevicesFromAuthenticatedUser(@AuthenticationPrincipal SecurityUser authenticatedUser) {
         return ResponseEntity.ok(deviceService.findDevicesByAuthenticatedUser(authenticatedUser)

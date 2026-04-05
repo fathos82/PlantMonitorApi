@@ -44,4 +44,7 @@ public class Device {
                 lastSeenAt.isAfter(LocalDateTime.now().minusSeconds(60));
     }
 
+    public void updateOnline() {
+        lastSeenAt =  LocalDateTime.now();
+    }
 }

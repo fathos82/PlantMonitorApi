@@ -85,4 +85,10 @@ public class DeviceService {
         deviceRepository.save(device);
         return device;
     }
+
+    public Device pingDevice(Long deviceId) {
+        Device device = getDeviceById(deviceId);
+        device.updateOnline();
+        return deviceRepository.save(device);
+    }
 }
