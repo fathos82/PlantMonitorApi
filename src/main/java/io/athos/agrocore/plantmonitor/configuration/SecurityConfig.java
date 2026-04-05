@@ -58,8 +58,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET,"/api/devices/from_device/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/devices/*/ping/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/sensors/from_device/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/sensors/from_device/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/sensors/*/errors/**").permitAll()
                                 .anyRequest().authenticated()
 
                 )

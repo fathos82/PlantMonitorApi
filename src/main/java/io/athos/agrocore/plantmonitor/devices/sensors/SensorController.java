@@ -25,7 +25,7 @@ public class SensorController {
     }
 
 
-    @PostMapping("{sensorId}/errors/")
+    @PostMapping("from_device/{sensorId}/errors/")
     public ResponseEntity<Void> registerError(@PathVariable Long sensorId, @RequestBody CreateSensorMessageError request){
         sensorService.registerError(sensorId, request.message());
         return ResponseEntity.ok().build();
