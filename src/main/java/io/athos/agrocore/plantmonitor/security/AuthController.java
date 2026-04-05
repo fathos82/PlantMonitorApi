@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("api/auth/")
 public class AuthController {
@@ -16,8 +14,8 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("register/")
-    public ResponseEntity<AuthRegisterResponse> registerUser(@Valid @RequestBody RegisterAuthRequest request){
-        return ResponseEntity.ok(new AuthRegisterResponse(authService.registerUser(request)));
+    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegisterAuthRequest request){
+        return ResponseEntity.ok(new AuthResponse(authService.registerUser(request)));
     }
 
     @PostMapping("login/")
@@ -43,9 +41,9 @@ public class AuthController {
     }
 
     @PatchMapping("/me/")
-    public ResponseEntity<AuthRegisterResponse> updateAuthenticatedUser(@AuthenticationPrincipal SecurityUser authenticatedUser, @RequestBody @Valid AuthUpdateRequest request) {
+    public ResponseEntity<AuthResponse> updateAuthenticatedUser(@AuthenticationPrincipal SecurityUser authenticatedUser, @RequestBody @Valid AuthUpdateRequest request) {
 
-        return ResponseEntity.ok(new AuthRegisterResponse(authService.updateUser(authenticatedUser, request)));
+        return ResponseEntity.ok(new AuthResponse(authService.updateUser(authenticatedUser, request)));
     }
 
 //

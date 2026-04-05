@@ -37,9 +37,10 @@ public class VirtualSensor {
     @Transient
     public boolean isWorking() {
         return lastDataAt != null &&
-                lastDataAt.isAfter(LocalDateTime.now().minusSeconds(25)) && !hasError ;
+                lastDataAt.isAfter(LocalDateTime.now().minusSeconds(5)) && !hasError ;
     }
     public void onDataReceived() {
+        hasError = false;
         this.lastDataAt = LocalDateTime.now();
     }
     public VirtualSensor(SensorTemplate sensorTemplate, Device device, Map<String, String> parameters){

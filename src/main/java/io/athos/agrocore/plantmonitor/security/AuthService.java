@@ -2,12 +2,10 @@ package io.athos.agrocore.plantmonitor.security;
 
 import io.athos.agrocore.plantmonitor.errors.InvalidInputRefreshToken;
 import io.athos.agrocore.plantmonitor.errors.InvalidRefreshTokenException;
-import io.athos.agrocore.plantmonitor.security.dtos.AuthRegisterResponse;
 import io.athos.agrocore.plantmonitor.security.dtos.AuthTokenResponse;
 import io.athos.agrocore.plantmonitor.security.dtos.AuthUpdateRequest;
 import io.athos.agrocore.plantmonitor.security.dtos.RegisterAuthRequest;
 import io.athos.agrocore.plantmonitor.users.User;
-import io.athos.agrocore.plantmonitor.users.UserToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import io.athos.agrocore.plantmonitor.users.UserService;
