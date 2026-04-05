@@ -32,7 +32,7 @@ public class MeasurementController {
         return ResponseEntity.ok(new MeasurementResponse(measurementService.changeSensor(measurementId, request, authenticatedUser)));
     }
 
-    @DeleteMapping("{measurementId}") // todo: maybe add type (ex: temperature)
+    @DeleteMapping("{measurementId}/") // todo: maybe add type (ex: temperature)
     public ResponseEntity<Void> deleteMeasurement(@PathVariable Long measurementId, @AuthenticationPrincipal SecurityUser authenticatedUser){
         measurementService.deleteMeasurement(measurementId,authenticatedUser);
         return ResponseEntity.noContent().build();

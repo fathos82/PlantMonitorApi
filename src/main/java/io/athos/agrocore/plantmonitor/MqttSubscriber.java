@@ -43,10 +43,8 @@ public class MqttSubscriber {
 
             try {
                 // TODO: Add Device UuID
-                System.out.println(topic);
                 String[] parts = topic.split("/");
                 if (parts.length != 3) return;
-                System.out.println(parts);
                 Long sensorId = Long.parseLong(parts[1]);
                 String capability = parts[2];
 

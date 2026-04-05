@@ -7,6 +7,7 @@ import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoringService;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
+import jakarta.transaction.Transactional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,12 +45,12 @@ public class MeasurementService {
         return measurement;
     }
 
-
+    @Transactional
     public void saveFromBatch(MeasurementType capability, Long sensorId, Proto.SensorReadingBatch batch) {
         List<MeasurementValue> measurementValues = new ArrayList<>();
         Measurement measurement = measurementRepository.findByVirtualSensorIdAndMeasurementType(sensorId, capability).orElseThrow(() -> new NotFoundException("measurement", "capability", capability.toString()));
+        measurement.getVirtualSensor().onDataReceived();
         long baseTimestamp = batch.getBaseTimestamp();
-        System.out.println(batch.toString());
         for (Proto.SensorReading sensorReading : batch.getReadingsList()) {
             long timestampRealMs = baseTimestamp + sensorReading.getDeltaMs();
             MeasurementValue measurementValue = new MeasurementValue(measurement,Instant.ofEpochMilli(timestampRealMs), Math.round(sensorReading.getValue() * 100.0) / 100.0);
