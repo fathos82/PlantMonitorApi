@@ -1,7 +1,6 @@
 package io.athos.agrocore.plantmonitor.devices.sensors;
 
 import io.athos.agrocore.plantmonitor.devices.Device;
-import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoring;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +23,7 @@ public class VirtualSensor {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
+    private String alias;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private PlantMonitoring plantMonitoring;
@@ -43,9 +43,10 @@ public class VirtualSensor {
         hasError = false;
         this.lastDataAt = LocalDateTime.now();
     }
-    public VirtualSensor(SensorTemplate sensorTemplate, Device device, Map<String, String> parameters){
+    public VirtualSensor(SensorTemplate sensorTemplate, Device device, Map<String, String> parameters, String alias){
         this.device = device;
         this.sensorTemplate = sensorTemplate;
+        this.alias = alias;
         this.parameters = parameters;
         if (parameters == null || parameters.isEmpty()) {
             this.parameters = new HashMap<>(sensorTemplate.getDefaultParameters());
