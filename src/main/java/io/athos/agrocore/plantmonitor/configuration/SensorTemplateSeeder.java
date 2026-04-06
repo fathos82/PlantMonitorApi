@@ -93,4 +93,44 @@ public class SensorTemplateSeeder implements ApplicationRunner {
 
         sensorTemplateRepository.save(template);
     }
+
+    private void seedYl69Sensor() {
+        if (sensorTemplateRepository.existsByModel("YL-69")) {
+            return;
+        }
+
+        SensorTemplate template = new SensorTemplate();
+        template.setName("Soil Moisture Sensor");
+        template.setModel("YL-69");
+        template.setCapabilities(Set.of(MeasurementType.HUMIDITY));
+
+        Map<String, String> params = new HashMap<>();
+        params.put("i2c_bus", "1");
+        params.put("i2c_address", "0x48");
+        params.put("adc_channel", "1");
+        params.put("v_dry", "3.3");
+        params.put("v_wet", "0.5");
+        template.setDefaultParameters(params);
+
+        sensorTemplateRepository.save(template);
+    }
+
+    private void seedMq135Sensor() {
+        if (sensorTemplateRepository.existsByModel("MQ-135")) {
+            return;
+        }
+
+        SensorTemplate template = new SensorTemplate();
+        template.setName("Air Quality Sensor");
+        template.setModel("MQ-135");
+        template.setCapabilities(Set.of(MeasurementType.AIR_QUALITY));
+
+        Map<String, String> params = new HashMap<>();
+        params.put("i2c_bus", "1");
+        params.put("i2c_address", "0x48");
+        params.put("adc_channel", "2");
+        template.setDefaultParameters(params);
+
+        sensorTemplateRepository.save(template);
+    }
 }
