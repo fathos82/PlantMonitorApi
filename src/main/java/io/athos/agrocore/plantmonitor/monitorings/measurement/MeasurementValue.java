@@ -54,7 +54,6 @@ public  class MeasurementValue {
     @Column(nullable = false)
     private double value;
 
-    // 🔒 Construtor controlado (evita estado inválido)
     public MeasurementValue(Measurement measurementParent, Instant timestamp, double value) {
         this.measurementParent = measurementParent;
         this.timestamp = timestamp;

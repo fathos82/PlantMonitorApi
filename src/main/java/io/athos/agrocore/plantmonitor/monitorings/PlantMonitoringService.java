@@ -45,11 +45,13 @@ public class PlantMonitoringService {
     @Transactional
     public void deletePlantMonitoring(Long plantMonitoringId, SecurityUser authenticatedUser) {
         PlantMonitoring plant = findById(plantMonitoringId, authenticatedUser);
+
+        plant.getMeasurements().forEach(measurement -> measurement.getValues().size());
+
         plant.getMeasurements().clear();
-        measurementRepository.deleteAllByPlantMonitoring_Id(plantMonitoringId);
+
         plantMonitoringRepository.delete(plant);
     }
-
     @Transactional
     public List<PlantMonitoring> findAll(SecurityUser authenticatedUser) {
         return plantMonitoringRepository.findAllByUser_Id(authenticatedUser.getPersistentUser().getId());
