@@ -9,6 +9,7 @@ import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementService
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class PlantMonitoringService {
     @Autowired
     private PlantMonitoringRepository plantMonitoringRepository;
     @Autowired
+    @Lazy
     private MeasurementService measurementService;
 
     public PlantMonitoring findById(Long id, SecurityUser authenticatedUser) {

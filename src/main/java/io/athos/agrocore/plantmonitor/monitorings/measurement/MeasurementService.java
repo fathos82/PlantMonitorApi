@@ -20,12 +20,13 @@ import java.util.List;
 public class MeasurementService {
     @Autowired
     private MeasurementRepository measurementRepository;
+
     @Autowired
+
     private PlantMonitoringService plantMonitoringService;
     @Autowired
     private MeasurementValueProtoRepository measurementValueProtoRepository;
-    @Autowired
-    private ObjectMapper objectMapper;
+
     @Autowired
     private SensorService sensorService;
     @Autowired
@@ -78,6 +79,7 @@ public class MeasurementService {
     @Transactional
     public void deleteMeasurement(Long measurementId, SecurityUser authenticatedUser) {
         Measurement measurement = getByIdAndAuthenticatedUser(measurementId, authenticatedUser);
+        measurement.setVirtualSensor(null);
         measurementValueRepository.deleteByMeasurementParent_Id(measurementId);
         measurementRepository.delete(measurement);
     }
