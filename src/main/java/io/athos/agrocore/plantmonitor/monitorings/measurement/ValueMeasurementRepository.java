@@ -55,6 +55,8 @@ public interface ValueMeasurementRepository extends JpaRepository<MeasurementVal
             @Param("endTimestamp") Instant end,
             @Param("limit") int limit
     );// TODO:
+
+    void deleteByMeasurementParent_Id(Long measurementParentId);
 //@GetMapping
 //public void stream(HttpServletResponse response) throws IOException {
 //    var writer = response.getWriter();
