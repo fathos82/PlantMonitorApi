@@ -75,6 +75,7 @@ public class MeasurementService {
         return measurementRepository.save(measurement);
     }
 
+    @Transactional
     public void deleteMeasurement(Long measurementId, SecurityUser authenticatedUser) {
         Measurement measurement = getByIdAndAuthenticatedUser(measurementId, authenticatedUser);
         measurementValueRepository.deleteByMeasurementParent_Id(measurementId);
