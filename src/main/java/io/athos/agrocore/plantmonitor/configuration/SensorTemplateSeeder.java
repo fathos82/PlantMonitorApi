@@ -32,6 +32,8 @@ public class SensorTemplateSeeder implements ApplicationRunner {
         seedMockSensor();
         seedHcsr04Sensor();
         seedLm35dzSensor();
+        seedYl69Sensor();
+        seedMq135Sensor();
     }
     @PostConstruct
     public void init() {
