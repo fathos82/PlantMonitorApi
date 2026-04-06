@@ -8,6 +8,7 @@ public record SensorResponse(
         Long id,
         Long deviceId,
         String sensorName,
+        String alias,
         String model,
 
         Set<MeasurementType> capabilities,
@@ -16,6 +17,6 @@ public record SensorResponse(
         // all information
         Map<String, String> parameters) {
     public SensorResponse(VirtualSensor sensor) {
-        this(sensor.getId(), sensor.getDevice().getId(), sensor.getSensorTemplate().getName(), sensor.getSensorTemplate().getModel(), sensor.getSensorTemplate().getCapabilities(), sensor.isWorking(), sensor.getParameters());
+        this(sensor.getId(), sensor.getDevice().getId(), sensor.getSensorTemplate().getName(),sensor.getAlias(), sensor.getSensorTemplate().getModel(), sensor.getSensorTemplate().getCapabilities(), sensor.isWorking(), sensor.getParameters());
     }
 }
