@@ -78,4 +78,6 @@ public interface MeasurementRepository extends JpaRepository<Measurement, Long> 
     void delete(Measurement entity);
 
     List<Measurement> findAllByPlantMonitoring_User_Id(Long id);
+
+    void deleteAllByPlantMonitoring_Id(Long plantMonitoringId);
 }

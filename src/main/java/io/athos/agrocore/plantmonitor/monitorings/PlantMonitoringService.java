@@ -3,6 +3,7 @@ package io.athos.agrocore.plantmonitor.monitorings;
 import io.athos.agrocore.plantmonitor.errors.NotFoundException;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.CreatePlantMonitoringRequest;
 import io.athos.agrocore.plantmonitor.monitorings.dtos.UpdatePlantMonitoringRequest;
+import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementRepository;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ import static io.athos.agrocore.plantmonitor.ObjectHelperUtils.setIfNotNull;
 public class PlantMonitoringService {
     @Autowired
     private PlantMonitoringRepository plantMonitoringRepository;
+    @Autowired
+    private MeasurementRepository measurementRepository;
+
     public PlantMonitoring findById(Long id, SecurityUser authenticatedUser) {
         return plantMonitoringRepository.findById_AndUser_Id(id, authenticatedUser.getPersistentUser().getId()).orElseThrow(
                 () -> new NotFoundException(PlantMonitoring.class, id)
@@ -40,9 +44,9 @@ public class PlantMonitoringService {
 
     @Transactional
     public void deletePlantMonitoring(Long plantMonitoringId, SecurityUser authenticatedUser) {
-
         PlantMonitoring plant = findById(plantMonitoringId, authenticatedUser);
         plant.getMeasurements().clear();
+        measurementRepository.deleteAllByPlantMonitoring_Id(plantMonitoringId);
         plantMonitoringRepository.delete(plant);
     }
 
