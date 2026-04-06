@@ -41,7 +41,7 @@ public class Device {
     @Transient
     public boolean isOnline() {
         return lastSeenAt != null &&
-                lastSeenAt.isAfter(LocalDateTime.now().minusSeconds(5));
+                lastSeenAt.isAfter(LocalDateTime.now().minusSeconds(10));
     }
 
     public void updateOnline() {
