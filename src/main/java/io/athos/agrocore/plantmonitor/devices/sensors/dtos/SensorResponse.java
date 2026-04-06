@@ -7,7 +7,7 @@ import java.util.Set;
 public record SensorResponse(
         Long id,
         Long deviceId,
-        String sensorName,
+        String name,
         String alias,
         String model,
 
