@@ -109,7 +109,7 @@ public class SensorTemplateSeeder implements ApplicationRunner {
         Map<String, String> params = new HashMap<>();
         params.put("i2c_bus", "1");
         params.put("i2c_address", "0x48");
-        params.put("adc_channel", "1");
+        params.put("adc_channel", "0");
         params.put("v_dry", "3.3");
         params.put("v_wet", "0.5");
         template.setDefaultParameters(params);
@@ -130,7 +130,7 @@ public class SensorTemplateSeeder implements ApplicationRunner {
         Map<String, String> params = new HashMap<>();
         params.put("i2c_bus", "1");
         params.put("i2c_address", "0x48");
-        params.put("adc_channel", "2");
+        params.put("adc_channel", "0");
         template.setDefaultParameters(params);
 
         sensorTemplateRepository.save(template);

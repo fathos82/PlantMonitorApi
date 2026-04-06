@@ -40,7 +40,10 @@ public class PlantMonitoringService {
 
     @Transactional
     public void deletePlantMonitoring(Long plantMonitoringId, SecurityUser authenticatedUser) {
-        plantMonitoringRepository.deleteById_AndUser_Id(plantMonitoringId, authenticatedUser.getPersistentUser().getId());
+
+        PlantMonitoring plant = findById(plantMonitoringId, authenticatedUser);
+        plant.getMeasurements().clear();
+        plantMonitoringRepository.delete(plant);
     }
 
     @Transactional

@@ -58,7 +58,7 @@ public class Measurement {
     private MeasurementType measurementType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plant_monitoring_id", nullable = false)
+    @JoinColumn(name = "plant_monitoring_id")
     private PlantMonitoring plantMonitoring;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "measurementParent", orphanRemoval = true, fetch = FetchType.LAZY)
