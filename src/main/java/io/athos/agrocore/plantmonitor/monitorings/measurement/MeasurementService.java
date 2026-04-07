@@ -8,10 +8,9 @@ import io.athos.agrocore.plantmonitor.monitorings.dtos.AddMeasurementRequest;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.dtos.ChangeSensorRequest;
 import io.athos.agrocore.plantmonitor.security.SecurityUser;
 import jakarta.transaction.Transactional;
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +27,11 @@ public class MeasurementService {
     private MeasurementValueProtoRepository measurementValueProtoRepository;
 
     @Autowired
+    private TimeBucketCalculator bucketCalculator;
+    @Autowired
     private SensorService sensorService;
     @Autowired
-    ValueMeasurementRepository measurementValueRepository;
+    MeasurementValueRepository measurementValueRepository;
 
 
 // TODO:   server.compression.enabled=true
@@ -79,9 +80,7 @@ public class MeasurementService {
     @Transactional
     public void deleteMeasurement(Long measurementId, SecurityUser authenticatedUser) {
         Measurement measurement = getByIdAndAuthenticatedUser(measurementId, authenticatedUser);
-        measurement.setVirtualSensor(null);
-        measurement.getValues().clear();
-        measurementValueRepository.deleteByMeasurementParent_Id(measurementId);
+        measurementValueRepository.deleteByMeasurementParentId(measurementId);
         measurementRepository.delete(measurement);
     }
 
@@ -89,46 +88,17 @@ public class MeasurementService {
         return measurementRepository.findAllByPlantMonitoring_User_Id(authenticatedUser.getPersistentUser().getId());
     }
 
-    public List<MeasurementValueView> listMeasurementByParentWithView(Long measurementId, Instant start, Instant end, int limit) {
-        long startTime = System.nanoTime();
-        System.out.printf("[SERVICE][VIEW] measurementId=%d, start=%s, end=%s, limit=%d%n",
-                measurementId, start, end, limit);
-
-        List<MeasurementValueView> values = measurementValueRepository.findMeasurementValuesWithView(measurementId, start, end, limit);
-
-        long durationMs = (System.nanoTime() - startTime) / 1_000_000;
-        System.out.printf("[SERVICE][VIEW] Result size=%d, Duration=%dms%n", values.size(), durationMs);
-
-        return values;
+    public MeasurementValueResponse listMeasurementByParentId(Long measurementId, Instant start, Instant end, Integer targetPoints) {
+        String optimalBucket = bucketCalculator.calculateDynamicBucket(start, end, targetPoints);
+        MeasurementStats measurementStats = measurementValueRepository.findStats(measurementId, start, end);
+        var values =  measurementValueRepository.findByMeasurementParentIdDownsampling(measurementId, start, end, optimalBucket, targetPoints);
+        return new MeasurementValueResponse(measurementStats.min(), measurementStats.max(), measurementStats.avg(), values);
     }
+
+
+
 
     public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBuffer(Long measurementId, Instant start, Instant end, Integer limit) {
-
-        long startTime = System.nanoTime();
-        System.out.printf("[SERVICE][PROTO] measurementId=%d, start=%s, end=%s, limit=%d%n",
-                measurementId, start, end, limit);
-
-        List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, start, end, limit);
-
-        Proto.SensorReadingsResponse.Builder readingsBuilder = Proto.SensorReadingsResponse.newBuilder();
-        for (MeasurementValueView mv : values) {
-            readingsBuilder.addReadings(
-                    Proto.SensorReadingResponse.newBuilder()
-                            .setTimestamp(mv.getTimestamp().toEpochMilli())
-                            .setValue((float) mv.getValue())
-                            .build()
-            );
-        }
-
-        Proto.SensorReadingsResponse response = readingsBuilder.build();
-        long durationMs = (System.nanoTime() - startTime) / 1_000_000;
-        System.out.printf("[SERVICE][PROTO] Number of readings=%d, Duration=%dms%n",
-                response.getReadingsCount(), durationMs);
-
-        return response;
-    }
-
-    public Proto.SensorReadingsResponse listMeasurementByParentWithNewProtoBuffer(Long measurementId, Instant start, Instant end, Integer limit) {
         long startTime = System.nanoTime();
         System.out.printf("[SERVICE][PROTO] measurementId=%d, start=%s, end=%s, limit=%d%n", measurementId, start, end, limit);
         Proto.SensorReadingsResponse response = measurementValueProtoRepository.findAsProto(measurementId, start, end, limit);
@@ -140,37 +110,6 @@ public class MeasurementService {
 
     }
 
-    public Proto.SensorReadingsResponse listMeasurementByParentWithProtoBufferParallel(
-            Long measurementId, Instant start, Instant end, Integer limit) {
-
-        long startTime = System.nanoTime();
-        System.out.printf("[SERVICE][PROTO_PARALLEL] measurementId=%d, start=%s, end=%s, limit=%d%n",
-                measurementId, start, end, limit);
-
-        List<MeasurementValueView> values = listMeasurementByParentWithView(measurementId, start, end, limit);
-
-        List<Proto.SensorReadingResponse> readingList = values.parallelStream()
-                .map(mv -> Proto.SensorReadingResponse.newBuilder()
-                        .setTimestamp(mv.getTimestamp().toEpochMilli())
-                        .setValue((float) mv.getValue())
-                        .build())
-                .toList();
-
-        Proto.SensorReadingsResponse.Builder readingsBuilder = Proto.SensorReadingsResponse.newBuilder();
-        readingsBuilder.addAllReadings(readingList);
-
-        Proto.SensorReadingsResponse response = readingsBuilder.build();
-        long durationMs = (System.nanoTime() - startTime) / 1_000_000;
-        System.out.printf("[SERVICE][PROTO_PARALLEL] Number of readings=%d, Duration=%dms%n",
-                response.getReadingsCount(), durationMs);
-
-        return response;
-    }
-
-    public List<Object[]> listMeasurementByParent(
-            Long measurementId, Instant start, Instant end, Integer limit) {
-        return measurementValueRepository.findRaw(measurementId, start, end, limit);
-    }
 
 
     public void detachSensorFromMeasurements(Long sensorId, SecurityUser authenticatedUser) {

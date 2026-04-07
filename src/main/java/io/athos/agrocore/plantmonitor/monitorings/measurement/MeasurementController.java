@@ -50,16 +50,7 @@ public class MeasurementController {
 
 
 
-    @GetMapping("{measurementId}/history/view/")
-    public ResponseEntity<List<MeasurementValueView>> listMeasurementByParentWithView(
-            @PathVariable Long measurementId,
-            @RequestParam(value = "start", required = true) Instant start,
-            @RequestParam(value = "end",  required = true) Instant end,
-            @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
-            ){
 
-        return ResponseEntity.ok(measurementService.listMeasurementByParentWithView(measurementId,  start, end, limit));
-    }
 
     @GetMapping(value = "{measurementId}/history/protobuf/", produces = "application/x-protobuf")
     public ResponseEntity<Proto.SensorReadingsResponse> listMeasurementByParentWithProtoBuffer(
@@ -73,38 +64,17 @@ public class MeasurementController {
     }
 
 
-    @GetMapping(value = "{measurementId}/history/newprotobuf/", produces = "application/x-protobuf")
-    public ResponseEntity<Proto.SensorReadingsResponse> listMeasurementByParentWithNewProtoBuffer(
-            @PathVariable Long measurementId,
-            @RequestParam("start") Instant start,
-            @RequestParam("end") Instant end,
-            @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
-    ){
-
-        return ResponseEntity.ok(measurementService.listMeasurementByParentWithNewProtoBuffer(measurementId,  start, end, limit));
-    }
-
-    @GetMapping(value = "{measurementId}/history/protobuf_parallel/", produces = "application/x-protobuf")
-    public ResponseEntity<Proto.SensorReadingsResponse> listMeasurementByParentWithProtoBufferParallel(
-            @PathVariable Long measurementId,
-            @RequestParam("start") Instant start,
-            @RequestParam("end") Instant end,
-            @RequestParam(value = "limit", defaultValue = " 2147483644") Integer limit
-    ){
-
-        return ResponseEntity.ok(measurementService.listMeasurementByParentWithProtoBufferParallel(measurementId,  start, end, limit));
-    }
 
 
 
     @GetMapping("{measurementId}/history/")
-    public ResponseEntity<List<Object[]>> listMeasurementByParent(
+    public ResponseEntity<MeasurementValueResponse> listMeasurementByParent(
             @PathVariable Long measurementId,
             @RequestParam("start") Instant start,
             @RequestParam("end") Instant end,
-            @RequestParam(value = "limit", defaultValue = "99999999") Integer limit
+            @RequestParam(value = "targetPoints", defaultValue = "800") Integer targetPoints
     ){
-        return ResponseEntity.ok(measurementService.listMeasurementByParent(measurementId,  start, end, limit));
+        return ResponseEntity.ok(measurementService.listMeasurementByParentId(measurementId,  start, end, targetPoints));
     }
 
 

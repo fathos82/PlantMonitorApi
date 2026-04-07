@@ -1,11 +1,10 @@
 package io.athos.agrocore.plantmonitor.monitorings.measurement;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 
@@ -22,42 +21,42 @@ import java.time.Instant;
 // PARTITION BY RANGE (timestamp)
 
 
+
+
+
+@Setter
+@Getter
+@NoArgsConstructor
+// 2. A Entidade perde o ID autoincremental
 @Entity
 @Table(
         name = "measurement_value",
         indexes = {
                 @Index(
-                        name = "idx_measurement_parent_time",
-                        columnList = "measurement_parent_id, timestamp"
+                        name = "idx_measurement_parent_time_desc",
+                        columnList = "measurement_parent_id, timestamp DESC"
                 )
-
         }
 )
-@Setter
-@Getter
-@NoArgsConstructor
-public  class MeasurementValue {
+
+
+
+@IdClass(MeasurementValuePK.class)
+public class MeasurementValue {
+
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "measurement_parent_id", nullable = false)
-    @JsonBackReference
-    private Measurement measurementParent;
-
-    @Column(nullable = false, updatable = false)
+    @JoinColumn(name = "measurement_parent_id", insertable = false, updatable = false)
+    private Long measurementParentId;
+    @Id
     private Instant timestamp;
 
     @Column(nullable = false)
-    private double value;
+    private Double value;
 
     public MeasurementValue(Measurement measurementParent, Instant timestamp, double value) {
-        this.measurementParent = measurementParent;
+        this.measurementParentId = measurementParent.getId();
         this.timestamp = timestamp;
         this.value = value;
     }
-
 }

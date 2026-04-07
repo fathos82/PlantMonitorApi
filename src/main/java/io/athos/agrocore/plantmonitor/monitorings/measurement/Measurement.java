@@ -49,7 +49,6 @@ public class Measurement {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    // TODO: Verificar como deve funcionar esse nullable true.
     @JoinColumn(name = "virtual_sensor_id")
     private VirtualSensor virtualSensor;
 
@@ -61,15 +60,12 @@ public class Measurement {
     @JoinColumn(name = "plant_monitoring_id")
     private PlantMonitoring plantMonitoring;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "measurementParent", orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<MeasurementValue> values = new ArrayList<>();
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public MeasurementValue addMeasurementValue(MeasurementValue valueMeasurement) {
-        valueMeasurement.setMeasurementParent(this);
-        return valueMeasurement;
-    }
+
 
 }
