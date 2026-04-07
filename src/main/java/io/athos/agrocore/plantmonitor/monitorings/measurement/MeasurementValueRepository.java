@@ -24,8 +24,7 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
     MeasurementStats findStats(@Param("id") Long id, @Param("start") Instant start, @Param("end") Instant end);
 
     @Query(value = """
-    SELECT 
-        (lttb_data).time AS time, 
+    SELECT (lttb_data).time AS time, 
         (lttb_data).value AS value
     FROM (
         SELECT lttb(
