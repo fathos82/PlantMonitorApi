@@ -15,6 +15,8 @@ public class TimescaleConfig {
     @PostConstruct
     public void init() {
         jdbc.execute("CREATE EXTENSION IF NOT EXISTS timescaledb;");
-        jdbc.execute("SELECT create_hypertable('medicao', 'timestamp', if_not_exists => TRUE);");
+        jdbc.execute("SELECT create_hypertable('measurement_value', 'timestamp', migrate_data => true, if_not_exists => TRUE);");
     }
+
+
 }
