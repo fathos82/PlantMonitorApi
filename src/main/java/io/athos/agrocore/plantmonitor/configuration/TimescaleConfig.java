@@ -1,3 +1,5 @@
+package io.athos.agrocore.plantmonitor.configuration;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
