@@ -14,8 +14,16 @@ public class TimescaleConfig {
 
     @PostConstruct
     public void init() {
+        // Ordem importa
         jdbc.execute("CREATE EXTENSION IF NOT EXISTS timescaledb;");
-        jdbc.execute("CREATE EXTENSION IF NOT EXISTS timescaledb_toolkit;");
+
+        // O LTTB SÓ EXISTE SE ISSO AQUI RODAR:
+        try {
+            jdbc.execute("CREATE EXTENSION IF NOT EXISTS timescaledb_toolkit;");
+        } catch (Exception e) {
+            System.err.println("AVISO: Toolkit não encontrado. Verifique sua imagem do Docker/Postgres.");
+        }
+
         jdbc.execute("SELECT create_hypertable('measurement_value', 'timestamp', migrate_data => true, if_not_exists => TRUE);");
     }
 
