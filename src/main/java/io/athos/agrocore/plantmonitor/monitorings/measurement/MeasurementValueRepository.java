@@ -24,8 +24,9 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
     MeasurementStats findStats(@Param("id") Long id, @Param("start") Instant start, @Param("end") Instant end);
 
     @Query(value = """
-    SELECT (lttb_data).time AS time, 
-        (lttb_data).value AS value
+    SELECT 
+        (public.unnest(lttb_data)).time AS time, 
+        (public.unnest(lttb_data)).value AS value
     FROM (
         SELECT lttb(
             time_bucket(CAST(:bucket AS interval), "timestamp"), 
@@ -45,7 +46,6 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
             @Param("bucket") String bucket,
             @Param("points") Integer points
     );
-    // Fallback bulk delete (if ON DELETE CASCADE is not used in DB)
 
 
     @Modifying // Obriga o Spring a pular o SELECT e mandar o DELETE direto
