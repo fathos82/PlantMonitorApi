@@ -25,11 +25,12 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
 
     @Query(value = """
     SELECT 
-        (public.unnest(lttb_data)).time AS time, 
-        (public.unnest(lttb_data)).value AS value
+        point.time AS time, 
+        point.value AS value
     FROM (
+        -- O LTTB atua direto na massa de dados brutos
         SELECT lttb(
-            time_bucket(CAST(:bucket AS interval), "timestamp"), 
+            "timestamp", 
             value, 
             :points 
         ) AS lttb_data
@@ -38,15 +39,16 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
           AND "timestamp" >= :start 
           AND "timestamp" <= :end
     ) sub
+    -- Usamos o LATERAL JOIN para desempacotar com o máximo de performance
+    CROSS JOIN LATERAL public.unnest(sub.lttb_data) AS point
     """, nativeQuery = true)
     List<MeasurementValueView> findByMeasurementParentIdDownsampling(
             @Param("measurementId") Long measurementId,
             @Param("start") Instant start,
             @Param("end") Instant end,
-            @Param("bucket") String bucket,
             @Param("points") Integer points
+            // REMOVI O PARAMETRO 'bucket' DAQUI. NÃO PRECISA MAIS!
     );
-
 
     @Modifying // Obriga o Spring a pular o SELECT e mandar o DELETE direto
     @Query("DELETE FROM MeasurementValue m WHERE m.measurementParentId = :parentId")
