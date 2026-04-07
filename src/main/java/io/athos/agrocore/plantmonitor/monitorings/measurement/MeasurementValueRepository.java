@@ -24,21 +24,21 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
     MeasurementStats findStats(@Param("id") Long id, @Param("start") Instant start, @Param("end") Instant end);
 
     @Query(value = """
-        SELECT 
-            time AS time, 
-            value AS value
-        FROM (
-            SELECT lttb(
-                time_bucket(CAST(:bucket AS interval), "timestamp"), 
-                value, 
-                :points 
-            ) AS lttb_data
-            FROM measurement_value
-            WHERE measurement_parent_id = :measurementId 
-              AND "timestamp" >= :start 
-              AND "timestamp" <= :end
-        ) sub
-        """, nativeQuery = true)
+    SELECT 
+        (lttb_data).time AS time, 
+        (lttb_data).value AS value
+    FROM (
+        SELECT lttb(
+            time_bucket(CAST(:bucket AS interval), "timestamp"), 
+            value, 
+            :points 
+        ) AS lttb_data
+        FROM measurement_value
+        WHERE measurement_parent_id = :measurementId 
+          AND "timestamp" >= :start 
+          AND "timestamp" <= :end
+    ) sub
+    """, nativeQuery = true)
     List<MeasurementValueView> findByMeasurementParentIdDownsampling(
             @Param("measurementId") Long measurementId,
             @Param("start") Instant start,
@@ -46,7 +46,6 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
             @Param("bucket") String bucket,
             @Param("points") Integer points
     );
-
     // Fallback bulk delete (if ON DELETE CASCADE is not used in DB)
 
 
