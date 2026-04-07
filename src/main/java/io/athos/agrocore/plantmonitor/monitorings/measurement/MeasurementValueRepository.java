@@ -25,7 +25,7 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
 
     @Query(value = """
     SELECT 
-        point.time AS time, 
+        point.time AS timestamp, 
         point.value AS value
     FROM (
         -- O LTTB atua direto na massa de dados brutos
