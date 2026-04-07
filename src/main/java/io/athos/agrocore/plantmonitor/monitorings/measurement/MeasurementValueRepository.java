@@ -35,14 +35,14 @@ public interface MeasurementValueRepository extends JpaRepository<MeasurementVal
             ) AS lttb_data
             FROM measurement_value
             WHERE measurement_parent_id = :measurementId 
-              AND "timestamp" >= :startTime 
-              AND "timestamp" <= :endTime
+              AND "timestamp" >= :start 
+              AND "timestamp" <= :end
         ) sub
         """, nativeQuery = true)
     List<MeasurementValueView> findByMeasurementParentIdDownsampling(
             @Param("measurementId") Long measurementId,
-            @Param("start") Instant startTime,
-            @Param("end") Instant endTime,
+            @Param("start") Instant start,
+            @Param("end") Instant end,
             @Param("bucket") String bucket,
             @Param("points") Integer points
     );
