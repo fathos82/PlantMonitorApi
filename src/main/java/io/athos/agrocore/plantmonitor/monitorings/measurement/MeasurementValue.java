@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Persistable;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -42,7 +43,7 @@ import java.time.Instant;
 
 
 @IdClass(MeasurementValuePK.class)
-public class MeasurementValue {
+public class MeasurementValue implements Persistable<MeasurementValuePK> {
 
 
     @Id
@@ -53,7 +54,15 @@ public class MeasurementValue {
 
     @Column(nullable = false)
     private Double value;
+    @Override
+    public MeasurementValuePK getId() {
+        return new MeasurementValuePK(measurementParentId, timestamp);
+    }
 
+    @Override
+    public boolean isNew() {
+        return true; // Força o Hibernate a dar apenas o INSERT direto
+    }
     public MeasurementValue(Measurement measurementParent, Instant timestamp, double value) {
         this.measurementParentId = measurementParent.getId();
         this.timestamp = timestamp;
