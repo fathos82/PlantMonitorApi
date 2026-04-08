@@ -25,9 +25,7 @@ public class TimescaleConfig {
                 System.err.println("⚠️ TimescaleDB Toolkit não disponível. O gráfico LTTB pode falhar.");
             }
 
-            // 2. Limpeza de "Lixo": Remove a tabela fantasma (plural) que impede a conversão
-            // Isso resolve o erro "cannot truncate a table referenced in a foreign key"
-            jdbc.execute("DROP TABLE IF EXISTS measurement_values CASCADE;");
+
 
             // 3. Verifica se a tabela já existe antes de tentar converter em Hypertable
             // O Hibernate pode demorar uns milissegundos para criar a tabela

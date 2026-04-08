@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,7 +31,7 @@ public class Device {
     private User user;
 
     @OneToMany(mappedBy = "device", fetch = FetchType.LAZY)
-    private List<VirtualSensor> sensors;
+    private List<VirtualSensor> sensors = new ArrayList<>();
     @CreatedDate
     private LocalDateTime firstSeenAt;
     @LastModifiedDate
