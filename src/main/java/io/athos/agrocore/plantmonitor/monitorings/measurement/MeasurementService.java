@@ -49,19 +49,15 @@ public class MeasurementService {
 
     @Transactional
     public void saveFromBatch(MeasurementType capability, Long sensorId, Proto.SensorReadingBatch batch) {
-        System.out.println("OI");
         List<MeasurementValue> measurementValues = new ArrayList<>();
         Measurement measurement = measurementRepository.findByVirtualSensorIdAndMeasurementType(sensorId, capability).orElseThrow(() -> new NotFoundException("measurement", "capability", capability.toString()));
-        System.out.println(measurement);
         measurement.getVirtualSensor().onDataReceived();
         long baseTimestamp = batch.getBaseTimestamp();
-        System.out.println(batch.toString());
         for (Proto.SensorReading sensorReading : batch.getReadingsList()) {
             long timestampRealMs = baseTimestamp + sensorReading.getDeltaMs();
             MeasurementValue measurementValue = new MeasurementValue(measurement,Instant.ofEpochMilli(timestampRealMs), Math.round(sensorReading.getValue() * 100.0) / 100.0);
             measurementValues.add(measurementValue);
         }
-        System.out.println(measurementValues.toString());
         measurementValueRepository.saveAll(measurementValues);
     }
 
@@ -93,6 +89,7 @@ public class MeasurementService {
     }
 
     public MeasurementValueResponse listMeasurementByParentId(Long measurementId, Instant start, Instant end, Integer targetPoints) {
+        String optimalBucket = bucketCalculator.calculateDynamicBucket(start, end, targetPoints);
         MeasurementStats measurementStats = measurementValueRepository.findStats(measurementId, start, end);
         var values =  measurementValueRepository.findByMeasurementParentIdDownsampling(measurementId, start, end, targetPoints);
         return new MeasurementValueResponse(measurementStats.getMin(), measurementStats.getMax(), measurementStats.getAvg(), values);
