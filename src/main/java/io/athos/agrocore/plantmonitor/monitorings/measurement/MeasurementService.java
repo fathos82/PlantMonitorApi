@@ -89,7 +89,6 @@ public class MeasurementService {
     }
 
     public MeasurementValueResponse listMeasurementByParentId(Long measurementId, Instant start, Instant end, Integer targetPoints) {
-        String optimalBucket = bucketCalculator.calculateDynamicBucket(start, end, targetPoints);
         MeasurementStats measurementStats = measurementValueRepository.findStats(measurementId, start, end);
         var values =  measurementValueRepository.findByMeasurementParentIdDownsampling(measurementId, start, end, targetPoints);
         return new MeasurementValueResponse(measurementStats.getMin(), measurementStats.getMax(), measurementStats.getAvg(), values);
