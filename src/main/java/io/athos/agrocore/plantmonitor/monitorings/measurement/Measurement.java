@@ -60,9 +60,7 @@ public class Measurement {
     @JoinColumn(name = "plant_monitoring_id")
     private PlantMonitoring plantMonitoring;
 
-    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<MeasurementValue> values = new ArrayList<>();
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
