@@ -10,7 +10,5 @@ import java.util.Optional;
 public interface PlantMonitoringRepository extends JpaRepository<PlantMonitoring,Long> {
     Optional<PlantMonitoring> findById_AndUser_Id(Long id, Long userId);
 
-    void deleteById_AndUser_Id(Long id, Long userId);
-
     List<PlantMonitoring> findAllByUser_Id(Long id);
 }

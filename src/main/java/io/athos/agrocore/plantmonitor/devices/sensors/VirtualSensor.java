@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -24,6 +25,13 @@ public class VirtualSensor {
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
     private String alias;
+    @OneToMany(
+            mappedBy = "sensor",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<SensorNotify> sensorNotifyList;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private PlantMonitoring plantMonitoring;
