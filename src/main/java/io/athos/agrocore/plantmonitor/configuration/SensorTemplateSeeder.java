@@ -118,11 +118,10 @@ public class SensorTemplateSeeder implements ApplicationRunner {
     }
 
     private void seedMq135Sensor() {
-        if (sensorTemplateRepository.existsByModel("MQ-135")) {
-            return;
-        }
+        SensorTemplate template = sensorTemplateRepository
+                .findByModel("MQ-135")
+                .orElse(new SensorTemplate()); // cria se não existir
 
-        SensorTemplate template = new SensorTemplate();
         template.setName("Air Quality Sensor");
         template.setModel("MQ-135");
         template.setCapabilities(Set.of(MeasurementType.AIR_QUALITY));
@@ -131,6 +130,10 @@ public class SensorTemplateSeeder implements ApplicationRunner {
         params.put("i2c_bus", "1");
         params.put("i2c_address", "0x48");
         params.put("adc_channel", "0");
+        params.put("rl_ohm", "20000");
+        params.put("ro_ohm", "76000");
+        params.put("calibration_gas", "CO2");
+
         template.setDefaultParameters(params);
 
         sensorTemplateRepository.save(template);

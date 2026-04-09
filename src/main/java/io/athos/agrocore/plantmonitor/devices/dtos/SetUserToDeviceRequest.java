@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotNull;
 
 public record SetUserToDeviceRequest (
     @NotNull
-    String deviceUuid
+    String deviceUuid,
+    String name,
+    String hostname
     ){
+
 }

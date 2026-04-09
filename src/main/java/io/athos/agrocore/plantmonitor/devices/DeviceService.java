@@ -81,6 +81,8 @@ public class DeviceService {
         if (device.getUser() != null){
             throw new DetailErrorException("O device já pertence a outro usuário.", UNAUTHORIZED);
         }
+        device.setName(request.name());
+        device.setHostname(request.hostname());
         device.setUser(authenticatedUser.getPersistentUser());
         deviceRepository.save(device);
         return device;
