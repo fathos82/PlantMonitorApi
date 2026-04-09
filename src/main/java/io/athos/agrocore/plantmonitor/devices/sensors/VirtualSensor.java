@@ -20,7 +20,7 @@ import java.util.Map;
 @EntityListeners(AuditingEntityListener.class)
 public class VirtualSensor {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;

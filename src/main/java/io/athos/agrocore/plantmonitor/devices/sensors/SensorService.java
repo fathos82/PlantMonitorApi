@@ -51,13 +51,13 @@ public class SensorService {
         SensorTemplate sensorTemplate = sensorTemplateRepository.findById(request.sensorTemplateId())
                 .orElseThrow(() -> new  NotFoundException(SensorTemplate.class, request.sensorTemplateId()));
         VirtualSensor sensor = new VirtualSensor(sensorTemplate, device, request.parameters(), request.alias());
-
         return virtualSensorRepository.save(sensor);
     }
 
     public VirtualSensor updateSensor(Long sensorId, UpdateSensorRequest request, SecurityUser authenticatedUser) {
         VirtualSensor virtualSensor = getSensorByIdAndAuthenticatedUser(sensorId, authenticatedUser);
         virtualSensor.setParameters(request.parameters());
+        virtualSensor.setAlias(request.alias());
         return virtualSensorRepository.save(virtualSensor);
     }
 

@@ -5,7 +5,8 @@ import java.util.Map;
 
 public record UpdateSensorRequest(
 //        String name,// todo: apelido ou modelo?
-        Map<String, String> parameters
-
+        Map<String, String> parameters,
+        String alias
 ) {
-        }
+
+}

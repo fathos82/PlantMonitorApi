@@ -18,10 +18,8 @@ public class SensorNotify {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "virtual_sensor_id") // Opcional: define um nome amigável para a coluna FK
+    @JoinColumn(name = "virtual_sensor_id")
     private VirtualSensor sensor;
-
     @Enumerated(EnumType.STRING)
     private NotifyType notifyType;
     private String message;
