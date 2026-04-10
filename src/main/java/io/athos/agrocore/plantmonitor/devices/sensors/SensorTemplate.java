@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class SensorTemplate {
     private String name;
     @ElementCollection
     @Enumerated(EnumType.STRING)
-    private Set<MeasurementType> capabilities;
+    private Set<MeasurementType> capabilities = new HashSet<>();
     @ElementCollection
     private Map<String, String> defaultParameters = new HashMap<>();
     private String model;
