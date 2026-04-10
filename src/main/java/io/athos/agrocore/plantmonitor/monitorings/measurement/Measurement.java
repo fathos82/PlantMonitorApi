@@ -65,5 +65,11 @@ public class Measurement {
     private LocalDateTime updatedAt;
 
 
+    public Long getVirtualSensorId() {
+        return virtualSensor != null ? virtualSensor.getId() : null;
+    }
 
+    public Long getPlantMonitoringId() {
+        return plantMonitoring != null ? plantMonitoring.getId() : null;
+    }
 }

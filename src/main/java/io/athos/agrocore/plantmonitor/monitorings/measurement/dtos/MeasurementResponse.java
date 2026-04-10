@@ -16,6 +16,6 @@ public record MeasurementResponse(
         LocalDateTime updatedAt
 ) {
     public MeasurementResponse(Measurement measurement) {
-        this(measurement.getId(), measurement.getVirtualSensor().getId(), measurement.getMeasurementType(), measurement.getPlantMonitoring().getId(), measurement.getUpdatedAt());
+        this(measurement.getId(), measurement.getVirtualSensorId(), measurement.getMeasurementType(), measurement.getPlantMonitoringId(), measurement.getUpdatedAt());
     }
 }
