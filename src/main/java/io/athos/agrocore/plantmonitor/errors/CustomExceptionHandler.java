@@ -242,6 +242,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(DetailErrorException.class)
     public ResponseEntity<Map<String, String>> handleGenericDetail(DetailErrorException ex) {
+        ex.printStackTrace();
         return ResponseEntity.status(ex.getStatus())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("detail", ex.getMessage()));
