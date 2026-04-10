@@ -6,6 +6,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -242,9 +243,9 @@ public class CustomExceptionHandler {
     @ExceptionHandler(DetailErrorException.class)
     public ResponseEntity<Map<String, String>> handleGenericDetail(DetailErrorException ex) {
         return ResponseEntity.status(ex.getStatus())
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("detail", ex.getMessage()));
     }
-
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
