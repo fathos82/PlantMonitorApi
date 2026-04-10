@@ -1,7 +1,6 @@
 package io.athos.agrocore.plantmonitor.devices.sensors;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import io.athos.agrocore.plantmonitor.monitorings.PlantMonitoring;
 import io.athos.agrocore.plantmonitor.monitorings.measurement.MeasurementType;
 import jakarta.persistence.*;
 import lombok.Getter;
