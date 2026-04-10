@@ -67,8 +67,8 @@ public class MeasurementService {
         return measurementRepository.findById(measurementId).orElseThrow(() -> new NotFoundException(Measurement.class.getSimpleName(), measurementId));
     }
 
-    Measurement getByIdAndAuthenticatedUser(Long measurementId, SecurityUser authenticatedUser) {
-        return measurementRepository.findByIdAndVirtualSensor_Device_User_Id(measurementId, authenticatedUser.getPersistentUser().getId()).orElseThrow(() -> new NotFoundException(Measurement.class.getSimpleName(), measurementId));
+    Measurement getById(Long measurementId) {
+        return measurementRepository.findById(measurementId).orElseThrow(() -> new NotFoundException(Measurement.class.getSimpleName(), measurementId));
     }
     public Measurement changeSensor(Long measurementId, ChangeSensorRequest request, SecurityUser authenticatedUser) {
         Measurement measurement =  findById(measurementId);
@@ -79,7 +79,7 @@ public class MeasurementService {
 
     @Transactional
     public void deleteMeasurement(Long measurementId, SecurityUser authenticatedUser) {
-        Measurement measurement = getByIdAndAuthenticatedUser(measurementId, authenticatedUser);
+        Measurement measurement = getById(measurementId);
         measurementValueRepository.deleteByMeasurementParentId(measurementId);
         measurementRepository.delete(measurement);
     }
