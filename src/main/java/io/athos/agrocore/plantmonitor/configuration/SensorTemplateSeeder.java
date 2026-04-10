@@ -62,7 +62,7 @@ public class SensorTemplateSeeder implements ApplicationRunner {
         SensorTemplate template = new SensorTemplate();
         template.setName("Ultrasonic Distance Sensor");
         template.setModel("HC-SR04");
-        template.setCapabilities(Set.of(MeasurementType.DISTANCE);
+        template.setCapabilities(Set.of(MeasurementType.DISTANCE));
 
         Map<String, String> params = new HashMap<>();
         params.put("trigger_pin", "23");
