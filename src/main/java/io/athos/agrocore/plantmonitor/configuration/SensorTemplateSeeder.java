@@ -19,55 +19,50 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+
 public class SensorTemplateSeeder implements ApplicationRunner {
 
     private final SensorTemplateRepository sensorTemplateRepository;
-    @Autowired
     private final JdbcTemplate jdbc;
-
 
     @Override
     @Transactional
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
+        createIndex();
+
         seedMockSensor();
         seedHcsr04Sensor();
         seedLm35dzSensor();
         seedYl69Sensor();
         seedMq135Sensor();
     }
-    @PostConstruct
-    public void init() {
 
-        // 🔥 Criar índice
+    private void createIndex() {
         jdbc.execute("""
             CREATE INDEX IF NOT EXISTS idx_measurement_parent_time_desc
             ON measurement_value (measurement_parent_id, timestamp DESC);
         """);
     }
+
     private void seedMockSensor() {
-        if (sensorTemplateRepository.existsByModel("MOCK")) {
-            return;
-        }
+        if (sensorTemplateRepository.existsByModel("MOCK")) return;
 
         SensorTemplate template = new SensorTemplate();
         template.setName("Mock Sensor");
         template.setModel("MOCK");
-        template.setCapabilities(Set.of(MeasurementType.MOCK)); // ou Set.of(MeasurementType.MOCK)
+        template.setCapabilities(Set.of(MeasurementType.MOCK));
         template.setDefaultParameters(Map.of());
 
         sensorTemplateRepository.save(template);
     }
 
     private void seedHcsr04Sensor() {
-        // Correção: De HC_SR04 (underline) para HC-SR04 (traço) para bater com o modelo salvo
-        if (sensorTemplateRepository.existsByModel("HC-SR04")) {
-            return;
-        }
+        if (sensorTemplateRepository.existsByModel("HC-SR04")) return;
 
         SensorTemplate template = new SensorTemplate();
         template.setName("Ultrasonic Distance Sensor");
         template.setModel("HC-SR04");
-        template.setCapabilities(Set.of(MeasurementType.DISTANCE));
+        template.setCapabilities(Set.of(MeasurementType.DISTANCE);
 
         Map<String, String> params = new HashMap<>();
         params.put("trigger_pin", "23");
@@ -78,9 +73,7 @@ public class SensorTemplateSeeder implements ApplicationRunner {
     }
 
     private void seedLm35dzSensor() {
-        if (sensorTemplateRepository.existsByModel("LM35DZ")) {
-            return;
-        }
+        if (sensorTemplateRepository.existsByModel("LM35DZ")) return;
 
         SensorTemplate template = new SensorTemplate();
         template.setName("Analog Temperature Sensor");
@@ -97,9 +90,7 @@ public class SensorTemplateSeeder implements ApplicationRunner {
     }
 
     private void seedYl69Sensor() {
-        if (sensorTemplateRepository.existsByModel("YL-69")) {
-            return;
-        }
+        if (sensorTemplateRepository.existsByModel("YL-69")) return;
 
         SensorTemplate template = new SensorTemplate();
         template.setName("Soil Moisture Sensor");
@@ -120,7 +111,7 @@ public class SensorTemplateSeeder implements ApplicationRunner {
     private void seedMq135Sensor() {
         SensorTemplate template = sensorTemplateRepository
                 .findByModel("MQ-135")
-                .orElse(new SensorTemplate()); // cria se não existir
+                .orElse(new SensorTemplate());
 
         template.setName("Air Quality Sensor");
         template.setModel("MQ-135");
